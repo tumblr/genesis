@@ -1,0 +1,6 @@
+[epel]
+name=EPEL6
+baseurl=http://dl.fedoraproject.org/pub/epel/6/$basearch/
+enable=1
+gpgcheck=0
+

@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "sl-base-v4.3.10"
+  config.vm.box_url = "http://nexus.ewr01.tumblr.net:8888/vagrant_boxes/sl-base-v4.3.10.box"
+
+  config.ssh.forward_agent = true
+    
+  config.vm.network "private_network", ip: "192.168.33.10", virtualbox__intnet: "genesis" 
+  config.vm.network "forwarded_port", guest: 80, host: 33008
+  config.vm.network "forwarded_port", guest: 8000, host: 33800
+  config.vm.network "forwarded_port", guest: 8080, host: 33808
+
+  config.vm.synced_folder "bootbox-shared", "/vagrant"
+  config.vm.synced_folder "../../",         "/genesis"
+
+  config.vm.provision "puppet" do |puppet|
+    puppet.manifests_path = "puppet/manifests"
+    puppet.manifest_file = "bootbox.pp"
+    puppet.module_path = "puppet/modules"
+  end 
+
+  config.vm.provider "virtualbox" do |v|
+    v.name = "Genesis-bootbox"
+    # minimum should be considered to be 2048, but feel free to use any
+    # value between 2048 and half your available system memory
+    v.memory = 2048
+  end
+end

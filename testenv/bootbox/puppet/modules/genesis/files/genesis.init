@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+# genesis
+#
+# chkconfig:   35 96 5
+# description: genesis web
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog=genesis
+user=daemon
+
+UNICORN=/usr/bin/unicorn
+UNICORN_PID=/var/run/genesis/unicorn.pid
+UNICORN_CONF=/genesis/web/config/unicorn.rb
+
+
+# local config options
+[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
+
+exec="--user=$user --pidfile=$UNICORN_PID $UNICORN -D -c $UNICORN_CONF"
+
+lockfile=/var/lock/subsys/$prog
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $exec
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    kill $(< $UNICORN_PID)
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start|stop|restart)
+        $1
+        ;;
+    status)
+        status $prog
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart}"
+        exit 2
+esac
+
