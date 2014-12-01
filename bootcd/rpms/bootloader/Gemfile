@@ -1,0 +1,9 @@
+source "http://rubygems.org"
+
+gem "genesis_promptcli",       "~> 0.1.0"
+gem "genesis_retryingfetcher", "~> 0.1.0"
+
+group :development do
+  gem "bundler", "~> 1.0"
+  gem "jeweler", "~> 1.8.7"
+end

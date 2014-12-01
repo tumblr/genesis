@@ -1,0 +1,7 @@
+# bundler
+.bundle
+
+# jeweler generated
+pkg
+
+Gemfile.lock

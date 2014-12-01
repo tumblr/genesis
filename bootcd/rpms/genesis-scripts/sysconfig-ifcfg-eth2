@@ -1,0 +1,4 @@
+DEVICE=eth2
+BOOTPROTO=dhcp
+ONBOOT=yes
+NAME=nic
