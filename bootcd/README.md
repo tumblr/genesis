@@ -1,10 +1,14 @@
-This is the image that is booted to run genesis tasks.
+This directory for building the image that is booted to run genesis
+tasks.  After they are built, copy the files in ./output/ to where
+they are expected by the net-booting process.
+
+Pre-requisites:
+- livecd-tools and createrepo RPMs installed
+- python and SimpleHTTPServer module
+
 
 How to build:
 - checkout code on a linux node
 - build ruby stable if desired
-- cp ruby RPM in a repo with baseurl=http://localhost/repo/
-  or adjust genesis.ks
-- cp bootloader RPM into same repo
 - sudo ./create-image.sh
   
