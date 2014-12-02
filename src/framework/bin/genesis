@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+begin
+  require 'rake'
+rescue LoadError
+  require 'rubygems'
+  require 'rake'
+end
+
+ENV['GENESIS_ROOT'] ||= '/var/run/genesis'
+
+# rake does chdir also, so don't put this in a block to avoid the warning
+Dir::chdir( File.join(ENV['GENESIS_ROOT'], '/tasks') )
+
+# run the normal rake application, but change its name to genesis
+rake = Rake.application
+rake.init('genesis')
+rake.load_rakefile
+rake.top_level

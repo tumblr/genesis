@@ -1,0 +1,8 @@
+source "http://rubygems.org"
+
+gem "termios", "~> 0.9.4"
+
+group :development do
+  gem "bundler", "~> 1.0"
+  gem "jeweler", "~> 1.8.7"
+end
