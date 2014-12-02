@@ -11,7 +11,7 @@ repo --name=base      --baseurl=http://ftp.scientificlinux.org/linux/scientific/
 repo --name=epel      --baseurl=http://mirrors.rit.edu/epel/6/x86_64/
 repo --name=fastbugs  --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.4/x86_64/updates/fastbugs/
 repo --name=security  --baseurl=http://ftp.scientificlinux.org/linux/scientific/6.4/x86_64/updates/security/
-repo --name=local     --baseurl=http://localhost/repo/
+repo --name=local     --baseurl=http://localhost:8000/repo/
 
 %packages
 # we want to target a more modern ruby environment
