@@ -1,4 +1,4 @@
-[ruby192]
+[ruby193]
 name=Software Collections ruby 1.9.3
 baseurl=http://ftp.scientificlinux.org/linux/scientific/6x/external_products/softwarecollections/$basearch/ruby193/
 enable=1

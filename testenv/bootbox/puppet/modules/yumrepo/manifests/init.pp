@@ -1,6 +1,8 @@
 class yumrepo {
   package {
-    ['livecd-tools','createrepo','tito','mock']: ensure => latest;
+    ['livecd-tools','createrepo','tito','mock']:
+      ensure  => latest,
+      require => File['/etc/yum.repos.d/epel.repo'];
   }
 
   file {
@@ -11,6 +13,4 @@ class yumrepo {
     '/etc/yum.repos.d/epel.repo':
       source => 'puppet:///modules/yumrepo/epel.repo';
   }
-
-  File['/etc/yum.repos.d/epel.repo'] -> Package['livecd-tools'] -> Package['createrepo'] -> Package['tito'] -> Package['mock']
 }

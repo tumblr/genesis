@@ -48,13 +48,16 @@ option space ipxe;
 subnet 192.168.33.0 netmask 255.255.255.0 {
     range 192.168.33.200 192.168.33.229;
     option subnet-mask 255.255.255.0;
-    option domain-name-servers 8.8.8.8;
+    option domain-name-servers <%= @dhcp_dns_servers %>;
     option broadcast-address 192.168.33.255;
-    option routers 192.168.33.10;
-    if exists ipxe.http {
-        filename "http://192.168.33.10:8000/genesis/${net0/mac}/boot/intake";
+    option routers <%= @genesis_ipaddress %>;
+    option ipxe.no-pxedhcp 1;  # speed optimization since everything is local
+# even though ipxe.org says this is the way to do it, it doesn't work!!!
+#    if exists user-class and option user-class = "iPXE" {
+     if exists ipxe.http {
+        filename "<%= @ipxe_menu_url %>";
     } else {
         filename "undionly.kpxe";
-        next-server 192.168.33.10;
+	next-server <%= @genesis_ipaddress %>;
     }
 }

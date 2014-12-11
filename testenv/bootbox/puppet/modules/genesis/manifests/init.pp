@@ -1,46 +1,55 @@
 class genesis{
-  # gems
+  $testenv_dir = "/${::testenv}"
+  $web_root = '/web'
+
   package {
     ['gcc', 'gcc-c++', 'libxslt-devel', 'libxml2-devel', 'ruby-devel']:
-      ensure => present,
+      ensure  => present,
       require => File['/etc/yum.repos.d/ruby193.repo'];
     ['sinatra', 'sinatra-contrib', 'unicorn']:
       provider => gem,
-      require => Package['ruby-devel'];
-  }
-
-  # nginx
-  $web_root = "/genesis/web"
-
-  nginx::conf_d {
-    'genesis': 
-      target  => 'genesis.conf',
-      content => template('nginx/rackapp.conf_d.erb');
+      require  => Package['ruby-devel'];
   }
 
   service {
-    "genesis":
+    'genesis':
       ensure    => running,
       enable    => true,
-      hasstatus => true;
+      hasstatus => true,
+      require   => File[$web_root];
   }
 
   file {
     ['/var/log/genesis', '/var/run/genesis']:
       ensure => directory,
-      mode   => 755,
+      mode   => '0755',
       owner  => daemon;
-    ['/genesis/web']:
+    [$web_root, '/genesis']: # vagrant creates these
       ensure => directory;
-    "/etc/init.d/genesis":
-      owner   => "root",
-      group   => "root",
-      mode    => "0755",
-      source => "puppet:///modules/genesis/genesis.init",
-      notify  => Service["genesis"],
+    '/etc/init.d/genesis':
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
+      source  => 'puppet:///modules/genesis/genesis.init',
+      notify  => Service['genesis'],
       require => Package['unicorn'];
+    "${web_root}/tasks":
+      ensure  => link,
+      target  => '/genesis/tasks',
+      require => File['/genesis'];
+
+    $testenv_dir:
+      ensure => directory;
+    "${testenv_dir}/config.yaml":
+      content => template('genesis/config.yaml.erb'),
+      require => File[$testenv_dir];
+    "${testenv_dir}/menu.ipxe":
+      content => template('genesis/menu.ipxe.erb'),
+      require => File[$testenv_dir];
+    "${testenv_dir}/stage2":
+      content => template('genesis/stage2.erb'),
+      require => File[$testenv_dir];
   }
 
   Package['sinatra'] -> Package['unicorn'] -> Service['genesis']
 }
-

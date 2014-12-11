@@ -13,7 +13,7 @@ user=daemon
 
 UNICORN=/usr/bin/unicorn
 UNICORN_PID=/var/run/genesis/unicorn.pid
-UNICORN_CONF=/genesis/web/config/unicorn.rb
+UNICORN_CONF=/web/config/unicorn.rb
 
 
 # local config options
@@ -34,7 +34,7 @@ start() {
 
 stop() {
     echo -n $"Stopping $prog: "
-    kill $(< $UNICORN_PID)
+    killproc -p $UNICORN_PID
     retval=$?
     echo
     [ $retval -eq 0 ] && rm -f $lockfile

@@ -1,16 +1,16 @@
 Name:           genesis_scripts
 Version:        0.2
 Release:        2%{?dist}
-License:        BSD
+License:        Apache License, 2.0
 URL:            http://tumblr.github.io/genesis 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Source0:        root-bash_profile 
-Source1:        sysconfig-ifcfg-eth0 
-Source2:        sysconfig-ifcfg-eth1 
-Source3:        sysconfig-ifcfg-eth2 
-Source4:        sysconfig-ifcfg-eth3 
-Source5:        sysconfig-init.diff 
-Source6:        tty.conf.override
+Source0:        src/root-bash_profile 
+Source1:        src/sysconfig-ifcfg-eth0 
+Source2:        src/sysconfig-ifcfg-eth1 
+Source3:        src/sysconfig-ifcfg-eth2 
+Source4:        src/sysconfig-ifcfg-eth3 
+Source5:        src/sysconfig-init.diff 
+Source6:        src/tty.conf.override
 Summary:        Scripts used by Genesis in the bootcd image
 Group:          System Environment/Base  
 Requires:       initscripts rootfiles patch

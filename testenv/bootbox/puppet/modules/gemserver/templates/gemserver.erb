@@ -1,0 +1,135 @@
+#!/bin/sh
+#
+# gemserver a daemon which hosts Ruby gems
+#
+# chkconfig:   345 20 80
+# description: a daemon which hosts Ruby gems
+
+### BEGIN INIT INFO
+# Provides: gemserver
+# Default-Start: 3 4 5
+# Default-Stop: 0 1 2 6
+# Short-Description: a daemon which hosts Ruby gems
+# Description: a daemon which hosts Ruby gems
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+exec="/usr/bin/gem"
+name="gemserver"
+# Space-separated list of ports to run all gemservers on.
+ports="<%= @port %>"
+
+[ -e /etc/sysconfig/$name ] && . /etc/sysconfig/$name
+
+pidfile=/var/run/gemserver
+lockfile=/var/lock/subsys/$name
+
+start() {
+    final_retval=0
+    for port in $ports; do
+        echo -n $"Starting $name on port $port: "
+        daemon $exec server --port $port --daemon
+        retval=$?
+        PID=$(ps ax -o pid,command | grep "gem server --port $port" | grep daemon | awk '{print $1}')
+        echo
+        # Creates lockfile and PID file for gemserver running on this port.
+        [ $retval -eq 0 ] && touch $lockfile-$port
+        [ $retval -eq 0 ] && echo $PID > $pidfile-$port.pid
+        # Records a nonzero status code if we encounter it to signal failure.
+        [ $retval -ne 0 ] && final_retval=$retval
+    done
+    return $final_retval
+}
+
+stop_on_port() {
+    port=$1
+    echo -n $"Stopping $name on port $port: "
+    killproc -p $pidfile-$port.pid $name-$port
+    retval=$?
+    echo
+    # Deletes lockfile and PID file for gemserver running on this port.
+    [ $retval -eq 0 ] && rm -f $lockfile-$port
+    [ $retval -eq 0 ] && rm -f $pidfile-$port.pid
+    return $retval
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    restart
+}
+
+force_reload() {
+    restart
+}
+
+status_for_port() {
+    port=$1
+    status -p $pidfile-$port.pid $name-$port
+}
+
+status_for_port_q() {
+    status_for_port $1 >/dev/null 2>&1
+}
+
+stop() {
+    final_retval=0
+    for port in $ports; do
+        status_for_port_q $port && stop_on_port $port
+        retval=$?
+        [ $retval -ne 0 ] && final_retval=$retval
+    done
+    return $final_retval
+}
+
+rh_status() {
+    final_retval=0
+    for port in $ports; do
+       status_for_port $port
+       retval=$?
+       [ $retval -ne 0 ] && final_retval=$retval
+    done
+    return $final_retval
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        stop || exit 7
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 2
+esac
+exit $?

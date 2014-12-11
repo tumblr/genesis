@@ -1,0 +1,30 @@
+---
+:ipxe:
+    :images:
+        :initrd: /ipxe-images/genesis-initrd.img
+        :kernel: /ipxe-images/genesis-vmlinuz
+    :kernel_flags: rootflags=loop root=live:/genesis.iso rootfstype=auto ro liveimg vga=791 rd_NO_LUKS rd_NO_MD rd_NO_DM console=ttyS1,115200
+    :menu_default: intake
+    :image_server: http://192.168.33.10:8000
+:genesis_server: http://192.168.33.10:8000
+:gem:
+    :http_proxy: http://nexus.ewr01.tumblr.net:6081
+    :source: http://nexus.ewr01.tumblr.net:6081
+:collins:
+    :host: http://172.16.118.8:8080
+    :username: 
+    :password:
+:ntp_server: aaa.ewr01.tumblr.net  
+:virident:
+    :base_url: http://nexus.ewr01.tumblr.net:8888/it
+    :v3_firmware: vgc-firmware-v3.tar.gz
+    :v2_firmware: vgc-firmware-v2.tar.gz
+    :v1_firmware: vgc-firmware-v1.tar.gz
+:bios_settings:
+    :base_url: http://mrepo-builder.ewr01.tumblr.net/mrepo/CentOS-5.8-Production-x86_64/RPMS.it
+    :c6105: dell-c6105-tumblr-bios-settings
+    :r720: 
+:verify_tool:
+    :script_url: /verify.sh/
+    :base_url: http://172.16.118.8:8000 
+

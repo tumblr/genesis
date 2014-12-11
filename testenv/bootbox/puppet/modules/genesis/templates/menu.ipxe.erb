@@ -1,0 +1,35 @@
+#!ipxe
+
+:genesis_menu
+menu Genesis 0.1
+item --gap Manual diagnostics mode: 
+item --key 0 local	0: Local Boot - Boot the hard drive
+item --key 1 util   1: Utility Mode - No tasks run automatically
+item
+item --gap Non-destructive Genesis Operations: 
+item --key 2 intake    2: Intake - Register with Collins (if new asset) and run machine setup
+item --key 3 hw_report 3: Hardware Report - Send new hardware report to Collins
+item --key 4 verify_sh 4: Verify - Run verification script and send notification to SRE team
+item
+item --gap Destructive Genesis Operations (THESE ERASE DATA):
+item --key 5 classic 5: Classic Mode - Intake and Burn-In
+item --key 6 burnin	 7: Burn-In - Stress test the hardware
+item --key 7 provision_prep 7: Provisioning Prep - Setup RAID array and make ready for provisioning
+item --key 8 disk_wipe 8: Permanently destroy contents of attached disks
+
+choose --default util --timeout 10000 target && goto ${target}
+
+:local
+sanboot --no-describe --drive 0x80 || goto genesis_menu
+
+:util
+:intake
+:hw_report
+:classic
+:burnin
+:verify_sh
+:provision_prep
+:disk_wipe
+initrd <%= @ipxe_initrd %>
+kernel <%= @ipxe_kernel %> <%= @ipxe_kernel_flags %> GENESIS_MODE=${target} GENESIS_CONF=<%= @ipxe_config_url %> <%= @raid_level.nil? ? "" : "GENESIS_RAID_LEVEL=#{raid_level}" %>
+boot

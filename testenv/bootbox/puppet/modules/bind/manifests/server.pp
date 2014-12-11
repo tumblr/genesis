@@ -4,8 +4,8 @@ class bind::server {
 
   service {
     'named':
-        enable  => true,
         ensure  => running,
+        enable  => true;
   }
 
   Service['named'] -> Package['bind-chroot']

@@ -1,0 +1,111 @@
+#! /usr/bin/env ruby
+
+# localisms for bootstrapping genesis.  See genesis-bootstrap for the
+# environment that this runs in.
+
+# The following code assumes we are connected to GENESIS_ROOT
+
+require "rubygems"
+require "yaml"
+require "retryingfetcher"
+require "promptcli"
+
+# no buffering of stdout so we see messages immediately
+$stdout.sync = true
+
+genesis_mode = ENV['GENESIS_MODE']
+puts "Stage2 starting.  genesis_mode: '#{genesis_mode}'"
+
+@genesis_config = {}
+begin
+  cfile = ENV['GENESIS_CONF']
+  puts '', "loading Genesis config file '#{cfile}'"
+   @genesis_config = YAML::load( File.read(cfile) )
+rescue => e
+  # genesis-bootstrap has already parsed this so the contents must be good
+  raise %q|reading genesis conf file '%s'  failed: %s| % \
+    [cfile, e.message]
+end
+
+puts "\nEnsuring temp directory for downloads exists"
+Dir.mkdir("tmp", 0755) unless File.directory? "tmp"
+
+puts ''
+@genesis_config.fetch(:gems).each do |gem, flags|
+  puts 'Installing %s gem...' % [gem]
+  Kernel.system ['gem install', gem, flags].reject {|e| e.nil?}.join(' ')
+  if $?.exitstatus != 0
+    raise 'gem install exited with status: ' + $?.exitstatus.to_s 
+  end
+end
+
+puts "\nInstalling repo files for genesis and tumblr"
+{
+  :genesis =>
+    "[genesis]
+     name = genesis
+     descr = Genesis
+     baseurl = <%= @rpm_base_url %>/RPMS.genesis
+     enabled = 1
+     priority = 1
+     gpgcheck = 0
+     ",
+  :tumblr =>
+    "[tumblr]
+    name = tumblr
+    descr = Tumblr
+    baseurl = <%= @rpm_base_url %>/RPMS.tumblr
+    enabled = 1
+    priority = 1
+    gpgcheck = 0
+    ",
+  :dell =>
+    "[dell]
+    name = dell
+    descr = Dell
+    baseurl = <%= @rpm_base_url %>/RPMS.omsa
+    enabled = 1
+    priority = 1
+    gpgcheck = 0
+    ",
+  :epel =>
+    "[epel]
+    name = epel
+    descr = Epel
+    baseurl = <%= @rpm_base_url %>/RPMS.epel
+    enabled = 1
+    priority = 1
+    gpgcheck = 0
+    "
+}.each do |k,v| 
+  File.open("/etc/yum.repos.d/#{k}.repo", 'w') do |file|
+    file.write(v.gsub /^\s+/, '') #strip leading whitespace on each line
+  end
+end
+
+# TODO: move this install into a script that is not part of the framework,
+# so people can define their own base requirements
+puts "\nInstalling required RPMs..."
+Kernel.system('yum', 'install', '-y',
+                'dmidecode', 'OpenIPMI', 'OpenIPMI-tools', 'syscfg'
+             )
+if $?.exitstatus != 0
+  raise 'yum install exited with status: ' + $?.exitstatus.to_s
+end
+puts "\nStarting IPMI services..."
+Kernel.system("chkconfig ipmi on; service ipmi start");
+
+raise 'ERROR: no tasks_url specified in configuration' \
+  if @genesis_config.fetch(:tasks_url, nil).nil?
+puts "\nDownloading tasks package..."
+Genesis::RetryingFetcher.get(@genesis_config[:tasks_url]) do |data|
+  File.open('tmp/tasks.tgz', 'w', 0755) { |file| file.write data }
+end
+
+puts "\nExtracting tasks..."
+Kernel.system('tar',  '-xzvf', 'tmp/tasks.tgz')
+
+puts "\nStarting genesis #{genesis_mode}"
+system('/usr/bin/genesis', genesis_mode)
+
+puts '', 'Stage2 all done!'

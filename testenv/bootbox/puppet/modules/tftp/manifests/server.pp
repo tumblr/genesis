@@ -1,19 +1,18 @@
 class tftp::server {
-  
   include tftp
-  
+
   service {
     'xinetd':
+      ensure  => running,
       enable  => true,
-      ensure  => running;
+      require => File['/etc/xinetd.d/tftp'];
   }
 
   file {
-    '/etc/xinetd.d/tftp':
-      source => 'puppet:///modules/tftp/tftp.conf';
     '/tftpboot':
       ensure => directory;
+    '/etc/xinetd.d/tftp':
+      source  => 'puppet:///modules/tftp/tftp.conf',
+      require => File['/tftpboot'];
   }
-  
-  File['/tftpboot'] -> File['/etc/xinetd.d/tftp'] ~> Service['xinetd']
 }
