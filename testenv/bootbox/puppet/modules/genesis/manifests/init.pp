@@ -2,6 +2,9 @@ class genesis{
   $testenv_dir = "/${::testenv}"
   $web_root = '/web'
 
+  # needed so mock can be use to build RPMs
+  user {'vagrant': groups => 'mock'}
+  
   package {
     ['gcc', 'gcc-c++', 'libxslt-devel', 'libxml2-devel', 'ruby-devel']:
       ensure  => present,

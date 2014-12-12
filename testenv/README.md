@@ -94,3 +94,11 @@ Following is basic information about testing or developing the different parts o
  - edit bootcd/rpms/bootloader/bin/genesis-bootstrap
  - cp genesis-bootstrap testenv/bootbox/bootbox-shared
  - run /vagrant/genesis-bootbox on snooper node
+
+* building RPMs in the testenv
+ - cd /genesis/bootcd/rpms/genesis_scripts
+ - rpmbuild --define "_tmppath /tmp" --define "_sourcedir src --define "_srcrpmdir ." --nodeps -bs genesis_scripts.spec
+ - mock -r epel-6-x86_64 genesis_scripts-0.2-2.el6.src.rpm
+ - ls /var/lib/mock/epel-6-x86_64/result
+   build.log  genesis_scripts-0.2-2.el6.x86_64.rpm  state.log
+   genesis_scripts-0.2-2.el6.src.rpm  root.log
