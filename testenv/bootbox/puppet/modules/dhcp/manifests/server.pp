@@ -11,7 +11,10 @@ class dhcp::server {
   service { 'dhcpd':
     ensure  => running,
     enable  => true,
-    require => File['/etc/dhcp/dhcpd.conf'];
+    require => [
+                File['/etc/dhcp/dhcpd.conf'],
+                Exec['set selinux permissive mode']
+               ];
   }
 
   Package['dhcp'] -> File['/etc/dhcp/dhcpd.conf']
