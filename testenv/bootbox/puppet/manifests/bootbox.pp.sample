@@ -23,4 +23,5 @@ node default {
     include ipxe
     include iptables
     include genesis
+    include selinux::permissive
 }
