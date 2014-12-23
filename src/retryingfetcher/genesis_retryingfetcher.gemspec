@@ -6,9 +6,9 @@ Gem::Specification.new do |gem|
   gem.summary = %Q{Genesis remote resource fetcher}
   gem.description = %Q{Genesis is used to manage provisioning of hardware. The retryingfetcher is what fetches resources from remote locations with a specified number of retries and backoff between each.}
   gem.authors = ['Jeremy Johnstone', 'Roy Marantz']
-  gem.version = '0.3.0'
+  gem.version = '0.4.0'
   gem.date = '2014-12-08'
-  gem.add_dependency('curb', '~> 0.8.5')
+  gem.add_dependency('httparty', '~> 0')
   gem.files = Dir['lib/*.rb', '*.md', '*.txt']
 end
 

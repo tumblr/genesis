@@ -10,12 +10,19 @@ module Genesis
     end
 
     get '/ipxe-images/:file?' do
-      file =  File.join('', 'genesis', 'bootcd', 'output', params['file'])
+      file =  File.join('', 'genesis', 'bootcd', 'output', params[:file])
+      send_file file
+    end
+
+    get '/gem/:name?' do
+      # get the latest version gem of that name
+      base =  File.join('', 'genesis', 'src' ,'*', params[:name])
+      file = Dir.glob(base + '*.gem').sort.last
       send_file file
     end
 
     get '/testenv/:file?' do
-      file =  File.join('', 'testenv', params['file'])
+      file =  File.join('', 'testenv', params[:file])
       if ['.yaml', '.yml'].include? File.extname(file)
         send_file file, :type => 'application/x-yaml'
       else

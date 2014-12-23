@@ -1,9 +1,10 @@
 Name:           genesis_scripts
-Version:        0.2
-Release:        2%{?dist}
+Version:        0.3
+Release:        1%{?dist}
 License:        Apache License, 2.0
-URL:            http://tumblr.github.io/genesis 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+URL:            http://tumblr.github.io/genesis
+BuildArch:      noarch
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 Source0:        src/root-bash_profile 
 Source1:        src/sysconfig-ifcfg-eth0 
 Source2:        src/sysconfig-ifcfg-eth1 
@@ -11,6 +12,7 @@ Source3:        src/sysconfig-ifcfg-eth2
 Source4:        src/sysconfig-ifcfg-eth3 
 Source5:        src/sysconfig-init.diff 
 Source6:        src/tty.conf.override
+Source7:        src/genesis-bootloader
 Summary:        Scripts used by Genesis in the bootcd image
 Group:          System Environment/Base  
 Requires:       initscripts rootfiles patch
@@ -39,6 +41,10 @@ install -m 644 -T %{SOURCE4}   $RPM_BUILD_ROOT/etc/sysconfig/network-scripts/ifc
 install -m 644 -T %{SOURCE5}   $RPM_BUILD_ROOT/etc/sysconfig/init.diff
 install -m 644 -T %{SOURCE6}   $RPM_BUILD_ROOT/etc/init/tty.conf.override
 
+# add the bootloader
+mkdir -p $RPM_BUILD_ROOT/usr/bin/
+install -m 555 -T %{SOURCE7}   $RPM_BUILD_ROOT/usr/bin/genesis-bootloader
+
 %clean
 # noop 
 
@@ -51,6 +57,7 @@ install -m 644 -T %{SOURCE6}   $RPM_BUILD_ROOT/etc/init/tty.conf.override
 %config /etc/sysconfig/init.diff 
 %config /etc/init/tty.conf.override
 %config /root/.bash_profile.genesis_scripts
+/usr/bin/genesis-bootloader
 
 %post 
 cat /root/.bash_profile.genesis_scripts >> /root/.bash_profile
@@ -58,6 +65,9 @@ cp  /etc/init/tty.conf.override /etc/init/tty.conf
 /usr/bin/patch /etc/sysconfig/init < /etc/sysconfig/init.diff
 
 %changelog
+* Tue Dec 16 2014 Roy Marantz <marantz@tumblr.com> 0.3-1
+- add genesis-bootloader
+
 * Mon Jul 07 2014 Jeremy Johnstone <jeremy@tumblr.com> 0.2-2
 - bringing up all 4 possible nics on the host machine when doing genesis boot
 

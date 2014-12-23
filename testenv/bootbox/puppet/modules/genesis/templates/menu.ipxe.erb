@@ -31,5 +31,5 @@ sanboot --no-describe --drive 0x80 || goto genesis_menu
 :provision_prep
 :disk_wipe
 initrd <%= @ipxe_initrd %>
-kernel <%= @ipxe_kernel %> <%= @ipxe_kernel_flags %> GENESIS_MODE=${target} GENESIS_CONF=<%= @ipxe_config_url %> <%= @raid_level.nil? ? "" : "GENESIS_RAID_LEVEL=#{raid_level}" %>
+kernel <%= @ipxe_kernel %> <%= @ipxe_kernel_flags %> GENESIS_MODE=${target} GENESIS_CONF_URL=<%= @ipxe_config_url %> <%= @raid_level.nil? ? "" : "GENESIS_RAID_LEVEL=#{raid_level}" %>
 boot

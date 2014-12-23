@@ -8,6 +8,40 @@
     :image_server: http://<%= @image_service %>/genesis
 :genesis_server: http://<%= @genesis_service %>
 :tasks_url: http://<%= @genesis_ipaddress %>:8888/tasks
+:yum_repos:
+    :genesis:
+        :label:     "[genesis]"
+	:name:      "genesis"
+	:descr:     "Genesis"
+        :descr:     "Genesis"
+	:baseurl:   "<%= @rpm_base_url %>/RPMS.genesis"
+	:enabled:   1
+	:priority:  1
+    	:gpgcheck:  0
+    :tumblr:
+        :label: "[tumblr]"
+	:name:  "tumblr"
+	:descr: "Tumblr"
+	:baseurl: "<%= @rpm_base_url %>/RPMS.tumblr"
+	:enabled:   1
+	:priority:  1
+    	:gpgcheck:  0
+    :dell:
+	:label:   "[dell]"
+    	:name:    "dell"
+    	:descr:   "Dell"
+    	:baseurl: "<%= @rpm_base_url %>/RPMS.omsa"
+	:enabled:   1
+	:priority:  1
+    	:gpgcheck:  0
+    :epel:
+	:label:   "[epel]"
+    	:name:    "epel"
+    	:descr:   "Epel"
+    	:baseurl: "<%= @rpm_base_url %>/RPMS.epel"
+	:enabled:   1
+	:priority:  1
+    	:gpgcheck:  0
 :gems:
     "genesis_framework": --source http://<%= @gem_service %> --no-rdoc --no-ri
 :collins:
