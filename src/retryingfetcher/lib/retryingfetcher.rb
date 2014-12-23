@@ -12,13 +12,9 @@ module Genesis
   
         begin 
           response = HTTParty.get(what)
-          next unless response.response_code == 200
-          if block_given?
-            yield response.body_str
-            break
-          else  
-            return response.body_str
-          end
+          next unless response.code == 200
+          yield response.body if block_given?
+          return response.body
         rescue  => e
           puts "RetyingFetcher.get error: %s" % e.message
         end
