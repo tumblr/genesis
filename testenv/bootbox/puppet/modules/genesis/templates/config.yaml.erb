@@ -11,37 +11,37 @@
 :yum_repos:
     :genesis:
         :label:     "[genesis]"
-	:name:      "genesis"
-	:descr:     "Genesis"
+        :name:      "genesis"
         :descr:     "Genesis"
-	:baseurl:   "<%= @rpm_base_url %>/RPMS.genesis"
-	:enabled:   1
-	:priority:  1
-    	:gpgcheck:  0
+        :descr:     "Genesis"
+        :baseurl:   "<%= @rpm_base_url %>/RPMS.genesis"
+        :enabled:   1
+        :priority:  1
+        :gpgcheck:  0
     :tumblr:
         :label: "[tumblr]"
-	:name:  "tumblr"
-	:descr: "Tumblr"
-	:baseurl: "<%= @rpm_base_url %>/RPMS.tumblr"
-	:enabled:   1
-	:priority:  1
-    	:gpgcheck:  0
+        :name:  "tumblr"
+        :descr: "Tumblr"
+        :baseurl: "<%= @rpm_base_url %>/RPMS.tumblr"
+        :enabled:   1
+        :priority:  1
+        :gpgcheck:  0
     :dell:
-	:label:   "[dell]"
-    	:name:    "dell"
-    	:descr:   "Dell"
-    	:baseurl: "<%= @rpm_base_url %>/RPMS.omsa"
-	:enabled:   1
-	:priority:  1
-    	:gpgcheck:  0
+        :label:   "[dell]"
+        :name:    "dell"
+        :descr:   "Dell"
+        :baseurl: "<%= @rpm_base_url %>/RPMS.omsa"
+        :enabled:   1
+        :priority:  1
+        :gpgcheck:  0
     :epel:
-	:label:   "[epel]"
-    	:name:    "epel"
-    	:descr:   "Epel"
-    	:baseurl: "<%= @rpm_base_url %>/RPMS.epel"
-	:enabled:   1
-	:priority:  1
-    	:gpgcheck:  0
+        :label:   "[epel]"
+        :name:    "epel"
+        :descr:   "Epel"
+        :baseurl: "<%= @rpm_base_url %>/RPMS.epel"
+        :enabled:   1
+        :priority:  1
+        :gpgcheck:  0
 :gems:
     "genesis_framework": --source http://<%= @gem_service %> --no-rdoc --no-ri
 :collins:
