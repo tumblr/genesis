@@ -32,7 +32,7 @@ module Genesis
 
     get '/tasks' do
       content_type "application/x-gzip"
-      `GZIP=-f tar -ch -zf - /genesis/tasks 2>/dev/null`
+      `GZIP=-f tar -chz -C /genesis -f - tasks 2>/dev/null`
     end
 
     get '/health' do

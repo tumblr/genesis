@@ -13,7 +13,6 @@
         :label:     "[genesis]"
         :name:      "genesis"
         :descr:     "Genesis"
-        :descr:     "Genesis"
         :baseurl:   "<%= @rpm_base_url %>/RPMS.genesis"
         :enabled:   1
         :priority:  1
@@ -42,8 +41,10 @@
         :enabled:   1
         :priority:  1
         :gpgcheck:  0
-:gems:
-    "genesis_framework": --source http://<%= @gem_service %> --no-rdoc --no-ri
+#:gems:
+#    "genesis_framework": --source http://<%= @gem_service %> --no-rdoc --no-ri
+:gem_files:
+    "genesis_framework": http://<%= @genesis_ipaddress %>:8888/gem/genesis_framework
 :collins:
     :host: <%= @collins_url %>
 :ntp_server: <%= @ntp_server %>
