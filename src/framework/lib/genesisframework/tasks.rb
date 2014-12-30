@@ -1,16 +1,16 @@
 require 'timeout'
 require 'promptcli'
-require 'json'
+require 'yaml'
 
 module Genesis
   module Framework
     module Tasks
-      def self.parse_config file
+      def self.load_config file
         begin
-          json = File.read(file)
+          data = File.read(file)
 
-          ## TODO: consider tokenizing the keys of the hash?
-          Genesis::Framework::Utils.config_cache = JSON.parse(json)
+          ## TODO: consider tokenizing the keys of the hash? needed???
+          Genesis::Framework::Utils.config_cache = YAML::load(data)
         rescue Exception => e
           puts "Caught exception parsing config %s file: $s" % [file, e.message]
         end
@@ -131,23 +131,6 @@ module Genesis
         return success
       end
 
-      def self.execute_all dir
-        self.parse_config(Genesis::Framework::Utils.tmp_path("genesis_config.json"));
-        self.load_tasks(dir)
-        return false unless @tasks.count > 0
-
-        puts "\nLoaded Tasks\n======================"
-        @tasks.each { |task_name| puts task_name }
-
-        puts "\n\nExecuting tasks..."
-
-        ret = @tasks.all? do |task_name|
-          self.execute(task_name)
-        end
-
-        puts "\n\n"
-        return ret
-      end
     end
   end
 end
