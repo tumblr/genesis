@@ -9,30 +9,6 @@
 :genesis_server: http://<%= @genesis_service %>
 :tasks_url: http://<%= @genesis_ipaddress %>:8888/tasks
 :yum_repos:
-    :genesis:
-        :label:     "[genesis]"
-        :name:      "genesis"
-        :descr:     "Genesis"
-        :baseurl:   "<%= @rpm_base_url %>/RPMS.genesis"
-        :enabled:   1
-        :priority:  1
-        :gpgcheck:  0
-    :tumblr:
-        :label: "[tumblr]"
-        :name:  "tumblr"
-        :descr: "Tumblr"
-        :baseurl: "<%= @rpm_base_url %>/RPMS.tumblr"
-        :enabled:   1
-        :priority:  1
-        :gpgcheck:  0
-    :dell:
-        :label:   "[dell]"
-        :name:    "dell"
-        :descr:   "Dell"
-        :baseurl: "<%= @rpm_base_url %>/RPMS.omsa"
-        :enabled:   1
-        :priority:  1
-        :gpgcheck:  0
     :epel:
         :label:   "[epel]"
         :name:    "epel"
@@ -48,16 +24,3 @@
 :collins:
     :host: <%= @collins_url %>
 :ntp_server: <%= @ntp_server %>
-:virident:
-    :base_url: http://<%= @file_service %>/it
-    :firmware: vgc-firmware-redhat6-3.1.1-51287.C6.tar.gz
-    :v3_firmware: vgc-firmware-v3.tar.gz
-    :v2_firmware: vgc-firmware-v2.tar.gz
-    :v1_firmware: vgc-firmware-v1.tar.gz
-:bios_settings:
-    :base_url: http://<%= @rpm_server %>/mrepo/CentOS-5.8-Production-x86_64/RPMS.it
-    :c6105: dell-c6105-tumblr-bios-settings
-    :r720:
-:verify_tool:
-    :script_url: /verify.sh/
-    :base_url: <%= @collins_url %>
