@@ -1,18 +1,15 @@
 Name:           genesis_scripts
-Version:        0.4
+Version:        0.5
 Release:        1%{?dist}
 License:        Apache License, 2.0
 URL:            http://tumblr.github.io/genesis
 BuildArch:      noarch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 Source0:        src/root-bash_profile 
-Source1:        src/sysconfig-ifcfg-eth0 
-Source2:        src/sysconfig-ifcfg-eth1 
-Source3:        src/sysconfig-ifcfg-eth2 
-Source4:        src/sysconfig-ifcfg-eth3 
-Source5:        src/sysconfig-init.diff 
-Source6:        src/tty.conf.override
-Source7:        src/genesis-bootloader
+Source1:        src/init.d-network-prep
+Source2:        src/sysconfig-init.diff 
+Source3:        src/tty.conf.override
+Source4:        src/genesis-bootloader
 Summary:        Scripts used by Genesis in the bootcd image
 Group:          System Environment/Base  
 Requires:       initscripts rootfiles patch
@@ -34,26 +31,21 @@ install -m 644 -T %{SOURCE0}   $RPM_BUILD_ROOT/root/.bash_profile.genesis_script
 # add some overrides we need
 mkdir -p $RPM_BUILD_ROOT/etc/sysconfig/network-scripts 
 mkdir -p $RPM_BUILD_ROOT/etc/init
-install -m 644 -T %{SOURCE1}   $RPM_BUILD_ROOT/etc/sysconfig/network-scripts/ifcfg-eth0
-install -m 644 -T %{SOURCE2}   $RPM_BUILD_ROOT/etc/sysconfig/network-scripts/ifcfg-eth1
-install -m 644 -T %{SOURCE3}   $RPM_BUILD_ROOT/etc/sysconfig/network-scripts/ifcfg-eth2
-install -m 644 -T %{SOURCE4}   $RPM_BUILD_ROOT/etc/sysconfig/network-scripts/ifcfg-eth3
-install -m 644 -T %{SOURCE5}   $RPM_BUILD_ROOT/etc/sysconfig/init.diff
-install -m 644 -T %{SOURCE6}   $RPM_BUILD_ROOT/etc/init/tty.conf.override
+mkdir -p $RPM_BUILD_ROOT/etc/init.d
+install -m 644 -T %{SOURCE1}   $RPM_BUILD_ROOT/etc/init.d/network-prep
+install -m 644 -T %{SOURCE2}   $RPM_BUILD_ROOT/etc/sysconfig/init.diff
+install -m 644 -T %{SOURCE3}   $RPM_BUILD_ROOT/etc/init/tty.conf.override
 
 # add the bootloader
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
-install -m 555 -T %{SOURCE7}   $RPM_BUILD_ROOT/usr/bin/genesis-bootloader
+install -m 555 -T %{SOURCE6}   $RPM_BUILD_ROOT/usr/bin/genesis-bootloader
 
 %clean
 # noop 
 
 %files
 %defattr(-, root, root)
-%config /etc/sysconfig/network-scripts/ifcfg-eth0 
-%config /etc/sysconfig/network-scripts/ifcfg-eth1 
-%config /etc/sysconfig/network-scripts/ifcfg-eth2
-%config /etc/sysconfig/network-scripts/ifcfg-eth3 
+%config /etc/init.d/network-prep
 %config /etc/sysconfig/init.diff 
 %config /etc/init/tty.conf.override
 %config /root/.bash_profile.genesis_scripts
@@ -63,8 +55,14 @@ install -m 555 -T %{SOURCE7}   $RPM_BUILD_ROOT/usr/bin/genesis-bootloader
 cat /root/.bash_profile.genesis_scripts >> /root/.bash_profile
 cp  /etc/init/tty.conf.override /etc/init/tty.conf
 /usr/bin/patch /etc/sysconfig/init < /etc/sysconfig/init.diff
+for l in 2 3 4 5; do
+  ln -s ../init.d/network-prep /etc/rc${l}.d/S09network-prep
+done
 
 %changelog
+* Fri Jan 09 2015 Roy Marantz <marantz@tumblr.com> 0.5-1
+- redo networking setup
+
 * Tue Dec 16 2014 Roy Marantz <marantz@tumblr.com> 0.3-1
 - add genesis-bootloader
 
