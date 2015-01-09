@@ -1,0 +1,79 @@
+require 'genesisframework'
+
+# support testing using rake(1) directly
+
+ENV['GENESIS_ROOT'] ||= '/var/run/genesis'
+ENV['GENESIS_CONF'] ||= File.join(ENV['GENESIS_ROOT'], 'config.yaml')
+
+tasks_dir = File.join(ENV['GENESIS_ROOT'], 'tasks')
+
+# TODO get these from the command line or ENV
+# these emulate what genesis currently gives best
+show_all = true
+dry_run = false
+
+Genesis::Framework::Tasks.load_config(ENV['GENESIS_CONF'])
+
+ALL_FRAMEWORK_TASKS = Genesis::Framework::Tasks.load_tasks(tasks_dir)
+BASIC_TASKS = ALL_FRAMEWORK_TASKS.reject do |t|
+  # exclude the really dangerous tasks
+  # TODO add a property to the task to indicate if it is DANGEROUS.
+  [:TimedBurnin, :DestroyDiskContents, :VerifyProvisioningPrep].include?(t.to_s)
+end.map {|t| t.to_sym}
+
+ALL_FRAMEWORK_TASKS.each do |tsk|
+  desc "Run #{tsk} genesis task" if show_all
+  task tsk.to_sym do
+    if dry_run
+      puts " would run: genesys run #{tsk}"
+    else
+      Genesis::Framework::Tasks.execute tsk
+    end
+  end
+end
+
+######################
+# the following reflect boot menu tasks from genesis/web/views/ipxe_boot.erb
+# and genesis/web/genesis.rb genesis/*/tasks/GENESIS_MODE
+######################
+
+desc 'No tasks run'
+task :util do
+  puts 'Done, but I am not doing anything'
+end
+
+desc 'Register new asset with Collins and run machine setup'
+task :intake => BASIC_TASKS do
+  puts 'Done with intake'
+end
+
+desc 'Send a new hardware report to Collins'
+task :hw_report => BASIC_TASKS do
+  puts 'Done with hardware report'
+end
+
+desc 'Intake and Burn-In'
+task :classic => [:intake, :TimedBurnin] do
+  puts 'Done with classic'
+end
+
+desc 'Stress test the hardware'
+task :burnin =>[:TimedBurnin] do
+  puts 'Done with burnin'
+end
+
+desc 'Run verification script and send notification to SRE team'
+task :verify_sh => [:VerifyScriptDownload] do
+  puts 'Done with verification'
+end
+
+# do another SystemReport since Collins should know about setup hardware raid
+desc 'Setup RAID array and make ready for provisioning'
+task :provision_prep => [:RaidSetupR720, :SystemReport, :VerifyProvisioningPrep] do
+  puts 'Done with provisioning prep'
+end
+
+desc 'Permanently destroy contents of attached disks'
+task :disk_wipe => [:DestroyDiskContents] do
+  puts 'Done with disk wipe'
+end
