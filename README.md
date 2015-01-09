@@ -3,13 +3,14 @@
 For operation, genesis needs the following services
 - genesis server
 - tftp server
-- nexus server
+- file/nexus server
 - pxe server
 - kickstart server
 
 The test setup is based upon
-- a Virtualbox VM which provides all the above servers
+- a Virtualbox VM, bootbox, which provides all the above servers
 - a seconds Virtualbox VM which is the client
+- an optional VM for snooping on the traffic and basic testing of the bootbox
 
 # Deployment
 

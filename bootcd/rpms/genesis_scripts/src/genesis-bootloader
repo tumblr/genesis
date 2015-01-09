@@ -1,0 +1,105 @@
+#!/usr/bin/env ruby
+
+# The genesis bootloader should rarely change and be site independent.
+#  It's purpose is to load the config file and stage2 loader and run
+#  that.  Put all local code modifications in stage2.
+
+require 'rubygems'
+require 'yaml'
+# TODO eliminate the need for these someday
+require 'retryingfetcher'
+require 'promptcli'
+
+# don't buffer stdout so tail -f of log file is more useful
+$stdout.sync=true
+
+# parameters from kernel boot
+CMD_FILE = ENV['GENESIS_CMD_FILE'] || '/proc/cmdline'
+PROC_CMDLINE = (File.exists?(CMD_FILE) \
+  && File.open(CMD_FILE, 'r') { |file| file.gets }) || ''
+
+def getoption name, default=''
+  [ENV[name], PROC_CMDLINE[/#{name}=(\S+)/, 1], default].find {|x| !x.nil?}
+end
+
+GENESIS_MODE = getoption 'GENESIS_MODE', 'intake'
+GENESIS_CONF_URL = getoption 'GENESIS_CONF_URL'
+GENESIS_RAID_LEVEL = 'GENESIS_RAID_LEVEL'
+
+puts ''
+puts 'Genesis operating mode is: %s' % [GENESIS_MODE]
+puts 'Genesis conf URL is: %s'       % [GENESIS_CONF_URL]
+puts 'Genesis raid level is: %s'     % [GENESIS_RAID_LEVEL.empty? \
+                                        ? '<not set>' \
+                                        : GENESIS_RAID_LEVEL]
+
+raise 'ERROR: GENESIS_CONF_URL not set in kernel command line' \
+  if GENESIS_CONF_URL.empty?
+
+# bring the configuration to this node
+genesis_conf = nil
+# don't put in a block since any raise will look like it is coming from the get
+data = Genesis::RetryingFetcher.get(GENESIS_CONF_URL)
+begin
+  genesis_config = YAML::load(data)
+rescue => e
+  if STDIN.tty?
+    puts "GENESIS_CONF_URL has invalid yaml: #{e.message}"
+  end
+end
+raise "ERROR: #{GENESIS_CONF_URL} did not contain valid yaml or was empty" \
+  if (genesis_config.nil? || genesis_config.empty?)
+
+# allow GENESIS_ROOT to be overridden from config
+GENESIS_ROOT = genesis_config.fetch(:root, '/var/run/genesis')
+puts 'Genesis root is: %s' % [GENESIS_ROOT]
+
+GENESIS_CONFIG_FILE = genesis_config.fetch(:config_file,
+  File.join(GENESIS_ROOT, 'config.yaml'))
+
+GENESIS_STAGE2_URL = genesis_config.fetch(:stage2_url,
+  File.join(File.dirname(GENESIS_CONF_URL), 'stage2'))
+GENESIS_STAGE2_SCRIPT =  genesis_config.fetch(:stage2_file,
+  File.join(GENESIS_ROOT, "stage2"))
+
+# Create our basic directory tree
+Dir.mkdir(GENESIS_ROOT, 0755) unless File.directory? GENESIS_ROOT
+
+File.open(GENESIS_CONFIG_FILE, "w", 0444) {|file| file.puts data}
+
+puts 'Genesis config file is: %s'    % [GENESIS_CONFIG_FILE]
+puts 'Genesis stage2 url is: %s'     % [GENESIS_STAGE2_URL]
+puts 'Genesis stage2 program is: %s' % [GENESIS_STAGE2_SCRIPT]
+puts '---', ''
+
+
+# fetch stage2
+loop do
+  Genesis::RetryingFetcher.get(GENESIS_STAGE2_URL) do |data|
+    File.open(GENESIS_STAGE2_SCRIPT, 'w', 0555) { |file| file.puts data }
+  end
+
+  # verify stage 2
+  syntax_valid = File.exists?(GENESIS_STAGE2_SCRIPT) && \
+    !`ruby -c #{GENESIS_STAGE2_SCRIPT}`.strip.match(/^Syntax OK$/).nil?
+  break if syntax_valid
+
+  puts ''
+  try_fetching = Genesis::PromptCLI.ask "Genesis Stage 2 is corrupt. Would you like to retry?" 
+  unless  try_fetching
+    raise RuntimeError, msg + "Genesis Stage 2 is corrupt. Execution halted!"
+  end
+  puts ''
+end
+
+# setup the environment for stage2
+ENV['GENESIS_ROOT']       = GENESIS_ROOT
+ENV['GENESIS_CONF']       = GENESIS_CONFIG_FILE
+ENV['GENESIS_MODE']       = GENESIS_MODE
+ENV['GENESIS_RAID_LEVEL'] = GENESIS_RAID_LEVEL if GENESIS_RAID_LEVEL
+
+# Execute the stage2 loader
+puts "\nSwitching to '" + GENESIS_ROOT + "' and executing stage 2..."
+Dir::chdir(GENESIS_ROOT)
+Kernel.exec('/usr/bin/env', 'ruby', GENESIS_STAGE2_SCRIPT)
+raise "ERROR: exec of stage2 script '#{GENESIS_STAGE2_SCRIPT}' failed"
