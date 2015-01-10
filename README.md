@@ -3,7 +3,7 @@
 For operation, genesis needs the following services
 - genesis server
 - tftp server
-- file/nexus server
+- file server
 - pxe server
 - kickstart server
 
@@ -14,8 +14,8 @@ The test setup is based upon
 
 # Deployment
 
-What gets deployed?  The web/ and tasks/ trees get deployed
-execpt for config.yml.
+What gets deployed?
+The web/ and tasks/ trees get deployed except for config.yml.
 
 Deployment is currently done via a git based deploy. There are three
 setup steps to get going.
