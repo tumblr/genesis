@@ -27,60 +27,62 @@ must finish within `timeout` seconds.
 The following are helper function and options available in run blocks to help
 out with performing the task.
 
-* `retries`
+* `retries count`
 
 Takes an argument which is either an Enumerator, with a list of timeouts for
 each retry, or a count which is the same as [0 .. (count-1)].  The default value
 of [0, 1, 2].
 
-Function arguments:
-`retries count`
+Example:
+[AssetCreation.rb](https://github.com/tumblr/genesis/blob/master/tasks/AssetCreation.rb#L4)
 
-* `timeout`
+* `timeout secs`
 
 Sets the number of seconds to wait for a `run` block to complete, default 0.
 
-Funtion arguments:
-`timeout secs`
-
-* `run_cmd`
-
-Will execute an external command (like open3) logging errors and
-returning the output.
-
-Function arguments:
-`run_cmd *cmd, stdin_data: '', return_both_streams: false, return_merged_streams:
+* `run_cmd *cmd, stdin_data: '', return_both_streams: false, return_merged_streams:
 false`
+
+Will execute an external command (like open3) logging errors and returning the
+output.
+
+Example:
+[TimedBurnin.rb](https://github.com/tumblr/genesis/blob/master/tasks/TimedBurnin.rb#L31)
+Function arguments:
 
 * `config`
 
 Gives access to the Genesis configuration information.
 
-* `log`
+Example:
+[BiosConfigrC6105.rb](https://github.com/tumblr/genesis/blob/master/tasks/BiosConfigrC6105.rb#L15)
+
+* `log message`
 
 Logs a message.
 
-Function arguments:
-`log message`
+Example:
+[AssetCreation.rb](https://github.com/tumblr/genesis/blob/master/tasks/AssetCreation.rb#L20)
 
-* `install`
+* `install provider, *what`
 
-Uses **yum** or **gem** to (possibly) install software.
+Uses either the **yum** provider or the **gem** provider to (possibly) install
+software.
 
-Function arguments:
-`install provider, *what`
+Example:
+[TimedBurnin.rb](https://github.com/tumblr/genesis/blob/master/tasks/TimedBurnin.rb#L13)
 
-* `fetch`
+* `fetch what, filename, base_url: ENV['GENESIS_URL']`
 
 Downloads a file from a remote server to the specified filename, retrying if
 needed.
 
-Function arguments:
-`fetch what, filename, base_url: ENV['GENESIS_URL']`
+Example:
+[BiosConfigrC6105.rb](https://github.com/tumblr/genesis/blob/master/tasks/BiosConfigrC6105.rb#L17)
 
-* `tmp_path`
+* `tmp_path filename`
 
 Returns a temporary file with the specified name.
 
-Function arguments:
-`tmp_path filename`
+Example:
+[BiosConfigrC6105.rb](https://github.com/tumblr/genesis/blob/master/tasks/BiosConfigrC6105.rb#L22)
