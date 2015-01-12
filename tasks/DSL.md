@@ -27,24 +27,30 @@ must finish within `timeout` seconds.
 The following are helper function and options available in run blocks to help
 out with performing the task.
 
-* `retries` - takes an argument which is either an Enumerator, with a list
-of timeouts for each retry, or a count which is the same as
-[0 .. (count-1)].  The default value of [0, 1, 2].
+* `retries`
+
+Takes an argument which is either an Enumerator, with a list of timeouts for
+each retry, or a count which is the same as [0 .. (count-1)].  The default value
+of [0, 1, 2].
+
+Function arguments:
+`retries count`
 
 * `timeout`
 
 Sets the number of seconds to wait for a `run` block to complete, default 0.
+
+Funtion arguments:
+`timeout secs`
 
 * `run_cmd`
 
 Will execute an external command (like open3) logging errors and
 returning the output.
 
-Function prototype:
-```
-run_cmd *cmd, stdin_data: '', return_both_streams: false, return_merged_streams:
-false
-```
+Function arguments:
+`run_cmd *cmd, stdin_data: '', return_both_streams: false, return_merged_streams:
+false`
 
 * `config`
 
@@ -54,35 +60,27 @@ Gives access to the Genesis configuration information.
 
 Logs a message.
 
-Function prototype:
-```
-log message
-```
+Function arguments:
+`log message`
 
 * `install`
 
 Uses **yum** or **gem** to (possibly) install software.
 
-Function prototype:
-```
-def install provider, *what
-```
+Function arguments:
+`install provider, *what`
 
 * `fetch`
 
 Downloads a file from a remote server to the specified filename, retrying if
 needed.
 
-Function prototype:
-```
-fetch what, filename, base_url: ENV['GENESIS_URL']
-```
+Function arguments:
+`fetch what, filename, base_url: ENV['GENESIS_URL']`
 
 * `tmp_path`
 
 Returns a temporary file with the specified name.
 
-Function prototype:
-```
-tmp_path filename
-```
+Function arguments:
+`tmp_path filename`
