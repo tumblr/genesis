@@ -1,97 +1,85 @@
-# Structure
+# Genesis
 
-For operation, genesis needs the following services
-- genesis server
-- tftp server
-- file/nexus server
-- pxe server
-- kickstart server
+## Introduction and motivation
+Genesis is a tool for data center automation. The primary motiviation for
+developing Genesis at Tumblr was to streamline the process of discovering new
+nodes and reporting their hardware details to our [inventory management
+system](https://github.com/tumblr/collins) without having to do a bunch of data
+entry by hand. In addition, we've also extended Genesis to be a convenient
+way to do hardware configuration such as altering BIOS settings and configuring
+RAID cards before provisioning an operating system on to the host.
 
-The test setup is based upon
-- a Virtualbox VM, bootbox, which provides all the above servers
-- a seconds Virtualbox VM which is the client
-- an optional VM for snooping on the traffic and basic testing of the bootbox
+From a high-level point of view, Genesis consists of a stripped down linux image
+suitable to boot over PXE and a ruby DSL for describing tasks to be executed on
+the host.
 
-# Deployment
+## Tasks
+Tasks are created using the [Genesis
+DSL](https://github.com/tumblr/genesis/blob/master/tasks/README.md) which makes
+it easy to run commands, install packages, et.c. in the stripped down
+environment.
 
-What gets deployed?  The web/ and tasks/ trees get deployed
-execpt for config.yml.
+Examples of tasks are the
+[TimedBurnin](https://github.com/tumblr/genesis/blob/master/tasks/TimedBurnin.rb)
+task, which performs a stress test on the system to rule out hardware errors
+before putting it into production, and
+[BiosConfigrR720](https://github.com/tumblr/genesis/blob/master/tasks/BiosConfigrR720.rb),
+which sets up the BIOS on Dell R720s just the way we want it.
 
-Deployment is currently done via a git based deploy. There are three
-setup steps to get going.
+## General workflow
+There are a couple of systems apart from Genesis that need to be in place for a
+successful deployment. These are
 
-1) Copy the deploy key to your ~/.ssh directory
+* a DHCP server,
+* a TFTP server,
+* and a file server (serving static files over HTTP)
 
-2) Add this to your .ssh/config
+More detail on setting these up is documented in
+[INSTALL.md](https://github.com/tumblr/genesis/blob/master/INSTALL.md).
 
-    Host genesis-prod-push
-       Hostname genesis-03f648c5.ewr01.tumblr.net
-       User deploy
-       IdentityFile ~/.ssh/tumblr_deploy
+When a node boots, the DHCP server tells the PXE firmware to chain boot into
+iPXE. We then use iPXE to present a list of menu choices, fetched from a remote
+server. When the user makes a choice we load the Genesis kernel and initrd (with
+the help of the TFTP server) along with parameters on the kernel command line.
+Once the Genesis OS has loaded, the genesis-bootloader fetches and executes a
+ruby script describing a second stage where we install gems, a few base RPMs,
+and fetch our tasks from a remote server. Finally, we execute the relevant
+tasks.
 
-3) Add the git remote via:
+For a real world example; Consider a brand new server that boots up. It makes a
+DHCP request and loads the iPXE menu. In this case, we know that we haven't seen
+this MAC address before, so it must be a new node. We boot Genesis in to
+discovery mode, where the tasks it runs are written to fetch all the hardware
+information we need and report it back to the inventory management system. In
+our setup this includes information such as hard drives and their capacity and
+the number of CPUs, but also more detailed information such as service tags,
+which memory banks are in use, and even the name of the switchports all
+interfaces are connected to. We then follow this up with 48 hours of hardware
+stress-test using the TimedBurnin task.
 
-    git remote add production genesis-prod-push:/genesis.git
+## Test environment
+To avoid testing Genesis in production, we've set up a virtual  test environment
+based on VirtualBox. This allows for end-to-end testing of changes to the
+framework, new tasks, et.c.
 
-You can then do a "git push production master" to deploy from there forward. 
+More information about the test environment and setting it up can be found in
+[testenv/README.md](https://github.com/tumblr/genesis/blob/master/testenv/README.md).
 
-Please note, only pushes of the master branch currently do a deploy /
-restart. This might change in the future.
+## Contact
+Please feel free to open issues on GitHub for any feedback or problems you might
+run in to. We also actively encourage pull requests. Please also make
+sure to check [CONTRIBUTING.md](https://github.com/tumblr/genesis/blob/master/CONTRIBUTING.md).
 
-Also please note, deploys are to be considered "brittle" at the
-moment, so be extra careful. Make sure nobody is trying to deploy at
-the same time, do not hit control-c once the git push has started,
-etc.
+## License
+Copyright 2015 Tumblr Inc.
 
-# Installation
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
 
-genesis server
-- sinatra application fronted by nginx
-  - gems: sinatra, sinatra-contrib, unicorn, raindrops
-- /var/www 0755 owner: deploy
-- capistrano target
+http://www.apache.org/licenses/LICENSE-2.0
 
-# Test Setup
-
-## Required Software
-
-The following needs to be available on your local machine to test.
-Download VirtualBox: http://download.virtualbox.org/virtualbox/4.3.10/VirtualBox-4.3.10-93012-OSX.dmg
-It needs to be 4.3.10-93012 specifically due to client tools installed in the box image. 
-
-Download Vagrant: http://www.vagrantup.com/downloads.html
-
-## Build
-
-Build the bootcd (need to build in Linux with livecd-tools!)
-
-    linuxbox$ cd bootscript && sudo ./create-image.sh
-    localmachine$ scp linuxbox:genesis/bootcd/output/genesis'*' genesis/web/public/ipxe-images/
-
-## Test
-
-Get vagrant running on your local machine:
-
-    vagrant up
-
-# How it works
-
-## Overall
-- the host PXE boots
-- chains to iPXE
-- gets menu from Phil
-- boot genesis livecd passing parameters on kernel cmd line
-- genesis-bootloader downloads stage 2
-- stage2 loader runs and
-  - downloads genesis-framework
-  - sets up yum repos
-  - installs base RPMs
-  - starts IPMI
-  - dowloads genesis task set
-  - runs all genesis tasks unless boot "util" mode
-
-## Task
-- run all :precondition blocks, exit if fail
-- run :init block, exit if fail
-- run :condition blocks, exit if fail
-- run :run blocks maybe :retries times with :timeout and sleep_interval
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
