@@ -3,6 +3,7 @@
 This is the test environment for Genesis which allows you to run
 end-to-end testing of changes without risking accidentally taking down
 the production setup. It uses two or three virtual machines:
+
 * a bootbox used to support netbooting
 * a target host which runs genesis
 * and optional snooper host to watch the network and help with debugginfg the bootbox
@@ -19,11 +20,14 @@ Requirements:
 
 * VirtualBox (version 4.3.10 because of the included .ova file)
 * Vagrant
-* Network access to Nexus (or having the Vagrant basebox previously installed)
+* Network access to fileserver (or having the Vagrant basebox previously installed)
 
 Configuration:
+
 1. copy Vagrantfile.sample to Vagrantfile adjusting as needed
 2. copy bootbox/puppet/manifests/bootbox.pp.sample to bootbox.pp and adjust
+3. copy bootbox/puppet/modules/genesis/templates/{config.yaml,stage2}.erb.sample
+and adjust
 
 Setup:
 
@@ -40,18 +44,18 @@ Notes:
 
 bootbox details:
 
-* filesystem layout (from Vagranfile)
-     / sl-base-4.3.10
-     /vagrant <- bootbox-shared an easy way to pass files around
-     /genesis <- ../.. a.k.a. top level of local git repo
-     /web     <- web  sinatra web fileserver to simulate nexus node
-     /testenv for puppet managed files, templated e.g. config.yaml menu.ipxe
-* running services:
-    dhcp
-	tftp
-	http sinatra application run by unicorn
-	named (not used?)
-	gem server
+Filesystem layout (from Vagranfile):
+* / sl-base-4.3.10
+* /vagrant <- bootbox-shared an easy way to pass files around
+* /genesis <- ../.. a.k.a. top level of local git repo
+* /web     <- web  sinatra web fileserver to simulate nexus node
+* /testenv for puppet managed files, templated e.g. config.yaml menu.ipxe
+Running services:
+* dhcp
+* tftp
+* http sinatra application run by unicorn
+* named (not used?)
+* gem server
 
 
 target startup details:
