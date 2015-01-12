@@ -1,97 +1,93 @@
-# Structure
-
-For operation, genesis needs the following services
-- genesis server
-- tftp server
-- file/nexus server
-- pxe server
-- kickstart server
-
-The test setup is based upon
-- a Virtualbox VM, bootbox, which provides all the above servers
-- a seconds Virtualbox VM which is the client
-- an optional VM for snooping on the traffic and basic testing of the bootbox
-
-# Deployment
-
-What gets deployed?  The web/ and tasks/ trees get deployed
-execpt for config.yml.
-
-Deployment is currently done via a git based deploy. There are three
-setup steps to get going.
-
-1) Copy the deploy key to your ~/.ssh directory
-
-2) Add this to your .ssh/config
-
-    Host genesis-prod-push
-       Hostname genesis-03f648c5.ewr01.tumblr.net
-       User deploy
-       IdentityFile ~/.ssh/tumblr_deploy
-
-3) Add the git remote via:
-
-    git remote add production genesis-prod-push:/genesis.git
-
-You can then do a "git push production master" to deploy from there forward. 
-
-Please note, only pushes of the master branch currently do a deploy /
-restart. This might change in the future.
-
-Also please note, deploys are to be considered "brittle" at the
-moment, so be extra careful. Make sure nobody is trying to deploy at
-the same time, do not hit control-c once the git push has started,
-etc.
-
 # Installation
 
-genesis server
-- sinatra application fronted by nginx
-  - gems: sinatra, sinatra-contrib, unicorn, raindrops
-- /var/www 0755 owner: deploy
-- capistrano target
+## Prerequisites
 
-# Test Setup
-
-## Required Software
-
-The following needs to be available on your local machine to test.
-Download VirtualBox: http://download.virtualbox.org/virtualbox/4.3.10/VirtualBox-4.3.10-93012-OSX.dmg
-It needs to be 4.3.10-93012 specifically due to client tools installed in the box image. 
-
-Download Vagrant: http://www.vagrantup.com/downloads.html
+For operation, genesis needs the following services
+- DHCP server
+- TFTP server
+- HTTP file server
 
 ## Build
 
-Build the bootcd (need to build in Linux with livecd-tools!)
+Build the boot image. This needs to be built in Linux with livecd-tools. The
+Genesis-bootbox virtualbox VM provided in the test environment has all the tools
+needed.
 
     linuxbox$ cd bootscript && sudo ./create-image.sh
     localmachine$ scp linuxbox:genesis/bootcd/output/genesis'*' genesis/web/public/ipxe-images/
 
-## Test
+## Configuration
 
-Get vagrant running on your local machine:
+### TFTP server
+The TFTP server serves the iPXE binary to the PXE firmware. We use the xinetd
+server daemon to launch the tftp daemon for incoming requests.
 
-    vagrant up
+```
+service tftp
+{
+  disable     = no
+  socket_type = dgram
+  protocol    = udp
+  wait        = yes
+  user        = root
+  server      = /usr/sbin/in.tftpd
+  server_args = -s /var/lib/tftpboot
+  per_source  = 11
+  cps         = 1000 2
+  instances   = 1000
+  flags       = IPv4
+}
+```
 
-# How it works
+Place the undionly.kpxe file (see
+[the iPXE docs](http://ipxe.org/download#chainloading_from_an_existing_pxe_rom)
+for more information) in /var/lib/tftpboot.
 
-## Overall
-- the host PXE boots
-- chains to iPXE
-- gets menu from Phil
-- boot genesis livecd passing parameters on kernel cmd line
-- genesis-bootloader downloads stage 2
-- stage2 loader runs and
-  - downloads genesis-framework
-  - sets up yum repos
-  - installs base RPMs
-  - starts IPMI
-  - dowloads genesis task set
-  - runs all genesis tasks unless boot "util" mode
+Example puppet code:
+* [TFTP](https://github.com/tumblr/genesis/tree/master/testenv/bootbox/puppet/modules/tftp/manifests)
+* [iPXE](https://github.com/tumblr/genesis/tree/master/testenv/bootbox/puppet/modules/ipxe/manifests)
 
-## Task
-- run all :precondition blocks, exit if fail
-- run :init block, exit if fail
-- run :condition blocks, exit if fail
-- run :run blocks maybe :retries times with :timeout and sleep_interval
+### DHCP server
+The DHCP server needs to be set up to chain load the iPXE firmware from the TFTP
+server. Using ISC DHCPd, a simplified configuration looks like
+
+```
+subnet 192.168.1.0 netmask 255.255.255.0 {
+    range 192.168.1.200 192.168.1.229;
+    option subnet-mask 255.255.255.0;
+    option broadcast-address 192.168.1.255;
+    option domain-name-servers <dns servers>;
+
+    if exists ipxe.http {
+        filename "<url to ipxe menu config>";
+    } else {
+        filename "undionly.kpxe";
+	next-server <file server ip>;
+    }
+}
+```
+More information on DHCP for loading iPXE can be found at 
+[iPXE.org](http://ipxe.org/howto/dhcpd#pxe_chainloading).
+
+Example puppet code:
+* [DHCP](https://github.com/tumblr/genesis/tree/master/testenv/bootbox/puppet/modules/dhcp/manifests)
+
+### HTTP file server
+The file server serves the genesis OS initrd and kernel so that iPXE can boot 
+them. It also serves the genesis config.
+
+It can also serve the iPXE menu configuration and the stage 2 ruby script.
+In a more complex setup however, these might be generated on the fly by a script.
+
+## Configuration files
+Examples to all the configuration files mentioned above can be found in the
+test environment puppet code. Here are a couple of sample files that are good
+to check out.
+
+* [Sample genesis config file](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/config.yaml.erb.sample)
+Fetched by Genesis OS to configure various URLs and other settings
+* [Sample menu.ipxe](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/menu.ipxe.erb)
+Used by iPXE to present a menu to the user. Note the GENESIS_MODE and 
+GENESIS_CONF_URL kernel parameters.
+* [Sample stage2 script](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/stage2.erb.sample)
+
