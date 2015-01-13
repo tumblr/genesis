@@ -1,6 +1,7 @@
 class BiosConfigrR720
   include Genesis::Framework::Task
 
+  description "Configure BIOS for R720s"
   wanted_by :intake
 
   precondition "has productname?" do

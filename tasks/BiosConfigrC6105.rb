@@ -1,6 +1,7 @@
 class BiosConfigrC6105
   include Genesis::Framework::Task
 
+  description "Configure BIOS for C6105"
   wanted_by :intake
 
   precondition "has productname?" do

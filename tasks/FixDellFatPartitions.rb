@@ -1,6 +1,7 @@
 class FixDellFatPartitions
   include Genesis::Framework::Task
 
+  description "Wipe any existing FAT partitions on all disks for Dells"
   set_attributes :dangerous
   depends_on :SomeTask
   wanted_by :intake, :classic

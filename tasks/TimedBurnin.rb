@@ -1,6 +1,7 @@
 class TimedBurnin 
   include Genesis::Framework::Task
 
+  description "Performs burnin for a specified duration"
   wanted_by :burnin, :intake
   set_attributes :dangerous
 
