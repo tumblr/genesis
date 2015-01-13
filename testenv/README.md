@@ -59,7 +59,9 @@ Configures the vm to be brought up with sl-base-v4.3.10
 Configures the genesis network on the machines
 
 `config.vm.synced_folder "bootbox-shared", "/vagrant"`
+
 `config.vm.synced_folder "../../",         "/genesis"`
+
 `config.vm.synced_folder "web",            "/web"`
 
 Sync testenv folders on your host machine
