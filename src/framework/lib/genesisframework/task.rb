@@ -13,7 +13,7 @@ module Genesis
       end
 
       module TaskDslMethods
-        attr_accessor :blocks, :options
+        attr_accessor :blocks, :options, :targets, :attributes, :dependencies, :description
 
         def description desc
           add_description desc
