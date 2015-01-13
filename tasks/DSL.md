@@ -6,12 +6,12 @@ Genesis tasks are ruby code extended with a small DSL described below.
 
 A task should contain one or more of the following blocks which are run in this order:
 
-1. `precondition`[1] - test that must succeed before this task can be considered for runing
-2. `init`[2] - sets up the tasks environment before execution
-3. `condition`[1] - tests for for things being ready to run
-4. `run`[3] - the retriable action
-5. `success`[3] - this runs if the action succeeded
-6. `rollback`[3] - this runs if the action failed
+1. `precondition` [1] - test that must succeed before this task can be considered for runing
+2. `init` [2] - sets up the tasks environment before execution
+3. `condition` [1] - tests for for things being ready to run
+4. `run` [3] - the retriable action
+5. `success` [3] - this runs if the action succeeded
+6. `rollback` [3] - this runs if the action failed
 
 * [1] the task is skipped if any of these returns false.  They take a **description** as their first argument.
 * [2] return result ignored
