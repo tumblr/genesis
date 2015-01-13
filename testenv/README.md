@@ -48,15 +48,13 @@ Filesystem layout (from Vagranfile):
 * / sl-base-4.3.10
 * /vagrant <- bootbox-shared an easy way to pass files around
 * /genesis <- ../.. a.k.a. top level of local git repo
-* /web     <- web  sinatra web fileserver to simulate nexus node
+* /web     <- web  sinatra web fileserver
 * /testenv for puppet managed files, templated e.g. config.yaml menu.ipxe
 Running services:
 * dhcp
 * tftp
 * http sinatra application run by unicorn
 * named (not used?)
-* gem server
-
 
 target startup details:
 
