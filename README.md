@@ -3,11 +3,12 @@
 ## Introduction and motivation
 Genesis is a tool for data center automation. The primary motiviation for
 developing Genesis at Tumblr was to streamline the process of discovering new
-machines and reporting their hardware details to our [inventory management
-system](https://github.com/tumblr/collins) without having to do a bunch of data
-entry by hand. In addition, we've also extended Genesis to be a convenient
-way to do hardware configuration such as altering BIOS settings and configuring
-RAID cards before provisioning an operating system on to the host.
+machines and reporting their hardware details to 
+[Collins](https://github.com/tumblr/collins), our inventory management system,
+without having to do a bunch of data entry by hand. In addition, we've also
+extended Genesis to be a convenient way to do hardware configuration such as
+altering BIOS settings and configuring RAID cards before provisioning an
+operating system on to the host.
 
 From a high-level point of view, Genesis consists of a stripped down linux image
 suitable to boot over PXE and a ruby DSL for describing tasks to be executed on
@@ -39,23 +40,22 @@ More detail on setting these up is documented in
 
 When a machine boots, the DHCP server tells the PXE firmware to chain boot into
 iPXE. We then use iPXE to present a list of menu choices, fetched from a remote
-server. When the user makes a choice we load the Genesis kernel and initrd (with
-the help of the TFTP server) along with parameters on the kernel command line.
-Once the Genesis OS has loaded, the genesis-bootloader fetches and executes a
-ruby script describing a second stage where we install gems, a few base RPMs,
-and fetch our tasks from a remote server. Finally, we execute the relevant
-tasks.
+server. When the user makes a choice we load the Genesis kernel and initrd (from
+the file server) along with parameters on the kernel command line. Once the
+Genesis OS has loaded, the genesis-bootloader fetches and executes a ruby script
+describing a second stage where we install gems, a few base RPMs, and fetch our
+tasks from a remote server. Finally, we execute the relevant tasks.
 
 For a real world example; Consider a brand new server that boots up. It makes a
 DHCP request and loads the iPXE menu. In this case, we know that we haven't seen
 this MAC address before, so it must be a new machine. We boot Genesis in to
 discovery mode, where the tasks it runs are written to fetch all the hardware
-information we need and report it back to the inventory management system. In
-our setup this includes information such as hard drives and their capacity and
-the number of CPUs, but also more detailed information such as service tags,
-which memory banks are in use, and even the name of the switchports all
-interfaces are connected to. We then follow this up with 48 hours of hardware
-stress-test using the TimedBurnin task.
+information we need and report it back to the Collins. In our setup this
+includes information such as hard drives and their capacity and the number of
+CPUs, but also more detailed information such as service tags, which memory
+banks are in use, and even the name of the switchports all interfaces are
+connected to. We then follow this up with 48 hours of hardware stress-test using
+the TimedBurnin task.
 
 ## Test environment
 To avoid testing Genesis in production, we've set up a virtual  test environment
