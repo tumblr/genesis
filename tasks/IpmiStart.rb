@@ -2,7 +2,6 @@ class IpmiStart
   include Genesis::Framework::Task
 
   description "Start up the IPMI services"
-  set_attributes :test_attribute, :ipmi
   wanted_by :intake
 
   init do

@@ -3,6 +3,7 @@ class BiosConfigrR720
 
   description "Configure BIOS for R720s"
   wanted_by :intake
+  after_tasks :AssetCreation
 
   precondition "has productname?" do
     not facter['productname'].nil?

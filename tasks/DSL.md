@@ -36,3 +36,28 @@ open3) logging errors and returning the output.
 `fetch what, filename, base_url: ENV['GENESIS_URL']` downloads *what* into *filename* retrying if needed.
 
 `tmp_path filename` returns a temporary file named *filename*
+
+`description "My task description here"` sets the description of the Task, to appear in things like ```rake -T```
+
+## Target Membership
+
+Tasks are grouped into top-level "targets", similar to systemd targets. You can specify what targets your task should be a part of with the following ```wanted_by``` directive:
+
+   wanted_by :target_name
+   
+You may specify multiple target names here (for example, if task ```UpgradeBios``` is in both the :intake and :provisioning_prep targets, you can say ```wanted_by :intake, :provisioning_prep```)
+
+Targets are implicitly created by being ```wanted_by``` a Task. There is a default ```util``` target that will run no tasks that is provided by the default Rakefile.
+
+## Dependency Ordering
+
+Tasks may express their dependencies in terms of other tasks within the target[s] they participate in. For example, the ```SetupBios``` Task may declare
+
+    after_tasks :AssetCreation, :StartIpmiService
+
+This states that ```SetupBios``` will only be run upon successful (or skipped) completion of Both the AssetCreation and StartIpmiService tasks. A failure (skips are not treated as failure) of either will prevent SetupBios from running.
+
+These dependencies are specified within the context of a target. As such, any dependencies of a task T in a target X must also specify ```wanted_by X```, or rake will fail to run successfully due to missing dependencies.
+
+
+

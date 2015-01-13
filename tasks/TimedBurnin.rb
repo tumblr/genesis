@@ -3,7 +3,6 @@ class TimedBurnin
 
   description "Performs burnin for a specified duration"
   wanted_by :burnin, :intake
-  set_attributes :dangerous
 
   precondition "has asset tag?" do
     not facter['asset_tag'].nil?

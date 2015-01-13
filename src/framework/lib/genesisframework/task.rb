@@ -13,7 +13,7 @@ module Genesis
       end
 
       module TaskDslMethods
-        attr_accessor :blocks, :options, :targets, :attributes, :dependencies, :description
+        attr_accessor :blocks, :options, :targets, :dependencies, :description
 
         def description desc
           add_description desc
@@ -53,6 +53,26 @@ module Genesis
           else
             set_option :retries, count.times.to_a
           end
+        end
+
+        # register this task as needing to run after the following tasks
+        # deps is varargs of TaskClassNames
+        def after_tasks *deps
+          self.init_defaults
+          self.dependencies = self.dependencies + deps.map(&:to_sym)
+        end
+
+        # what targets to participate in
+        # targets is varargs of target names (i.e. burnin, intake)
+        def wanted_by *targets
+          self.init_defaults
+          self.targets = self.targets + targets
+        end
+
+        # description of what this task does
+        def add_description desc
+          self.init_defaults
+          self.description = desc
         end
 
         def collins
@@ -140,7 +160,10 @@ module Genesis
           Genesis::Framework::Utils.tmp_path(filename, self.class.name)
         end
 
-        #############################################
+        #############################################################
+        # These methods are private and not part of the exposed DSL.
+        # Use at your own risk.
+        #############################################################
 
         def set_block sym, block
           self.init_defaults
@@ -160,32 +183,9 @@ module Genesis
           self.options[sym] = option
         end
 
-        def depends_on *deps
-          self.init_defaults
-          self.dependencies = self.dependencies + deps.map(&:to_sym)
-        end
-
-        # what targets to participate in
-        def wanted_by *targets
-          self.init_defaults
-          self.targets = self.targets + targets
-        end
-
-        # Add arbitrary attributes to this task
-        def set_attributes *attrs
-          self.init_defaults
-          self.attributes = self.attributes + attrs
-        end
-
-        def add_description desc
-          self.init_defaults
-          self.description = desc
-        end
-
         def init_defaults
           self.blocks ||= { :precondition => {}, :init => nil, :condition => {}, :run => nil, :rollback => nil, :success => nil }
           self.options ||= { :retries => 3.times.to_a, :timeout => 0 }
-          self.attributes ||= []
           self.targets ||= []
           self.dependencies ||= []
           self.description ||= "no description"
