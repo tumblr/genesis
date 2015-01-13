@@ -26,8 +26,10 @@ PXE.
 
 1. copy Vagrantfile.sample to Vagrantfile adjusting as needed
 2. copy bootbox/puppet/manifests/bootbox.pp.sample to bootbox.pp and adjust
-3. copy bootbox/puppet/modules/genesis/templates/{config.yaml,stage2}.erb.sample
-and adjust
+3. copy bootbox/puppet/modules/genesis/templates/config.yaml.erb.sample
+4. copy bootbox/puppet/modules/genesis/templates/stage2.erb.sample
+
+and modify settings as desired.
 
 ## Setup:
 
@@ -44,21 +46,33 @@ and adjust
 
 ## Bootbox details:
 
-### Filesystem layout (from Vagranfile):
-* / sl-base-4.3.10
-* /vagrant <- bootbox-shared an easy way to pass files around
-* /genesis <- ../.. a.k.a. top level of local git repo
-* /web     <- web  sinatra web fileserver
-* /testenv for puppet managed files, templated e.g. config.yaml menu.ipxe
-Running services:
+### Vagrant specification:
+
+We only cover some of the important configuration options from the vagrant file. Please see [vagrant docs](https://docs.vagrantup.com/v2/vagrantfile/) for an exhaustive list.
+
+`config.vm.box = "sl-base-v4.3.10"`
+
+Configures the vm to be brought up with sl-base-v4.3.10
+
+`config.vm.network "private_network", ip: "192.168.33.10", virtualbox__intnet: "genesis" `
+
+Configures the genesis network on the machines
+
+`config.vm.synced_folder "bootbox-shared", "/vagrant"`
+`config.vm.synced_folder "../../",         "/genesis"`
+`config.vm.synced_folder "web",            "/web"`
+
+Sync testenv folders on your host machine
+
+The bootbox runs the following services:
 * dhcp
 * tftp
-* http sinatra application run by unicorn
-* named (not used?)
+* a file server (serving static files over HTTP)
 
 ### Target startup details:
 
 The following details have a line of descriptive text, details on what the bootbox service does, and other files under puppet/ which are involed
+
 1. VirtualBox iPXE asks dhcp what to do
     dhcpd says load /tftpboot/undionly.kpxe from @genesis_ipaddress via tftp
     dhcp server.pp dhcpd.conf.erb
@@ -67,18 +81,14 @@ The following details have a line of descriptive text, details on what the bootb
     genesis.pp menu.erb
 3. iPXE menu boots genesis image
 4. kernel loads and starts
-5. when a root login shell is started, run genesis-bootloader
-   bash /root/.bash_profile
-   bootcd/rpms/genesis-scripts/root-bash_profile
-5. genesis-bootloader downloads config.yaml and stage2 then starts stage2
-   unicorn web/genesis.rb
-6. stage2 does tumblr specific genesis startup.  setup yum repos, load framework gem, start IPMI, download tasks, start genesis
-   stage2.erb
+5. On boot-up, genesis-bootloader in launched via a specification in [/root/.bash_profile](https://github.com/tumblr/genesis/blob/master/bootcd/rpms/genesis_scripts/src/root-bash_profile)
+5. genesis-bootloader downloads config.yaml and stage2 using the (bootbox file server)[https://github.com/tumblr/genesis/blob/master/testenv/bootbox/web/genesis.rb] then starts stage2
+6. (Stage2)[https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/stage2.erb.sample] includes site specific genesis startup.  setup yum repos, load framework gem, download tasks, start genesis task
 
 * How to test or develop
 Following is basic information about testing or developing the different parts of genesis and the test environment.  When I say "boot the target" you can do that or use the snooper host to manually run genesis-bootstrap instead.
 
-* one of the GEMs
+* Updating a Gem
  - Modify source
  - update version number in .gemspec file
  - gem build ...gemspec
@@ -87,12 +97,12 @@ Following is basic information about testing or developing the different parts o
  - gem install /vagrant/...gem --no-rdoc --no-ri
  - boot the target
 
-* stage2
+* Modifying Stage2
  - edit testenv/bootbox/puppet/modules/genesis/templates/stage2.erb
  - vagrant up or vagrant provision to install it on bootbox
  - boot the target
 
 * genesis-bootstrap
- - edit bootcd/rpms/bootloader/bin/genesis-bootstrap
- - cp genesis-bootstrap testenv/bootbox/bootbox-shared
- - run /vagrant/genesis-bootbox on snooper node
+ - edit bootcd/rpms/bootloader/bin/genesis-bootloader
+ - cp genesis-bootloader testenv/bootbox/bootbox-shared
+ - run /vagrant/genesis-bootloader on snooper node
