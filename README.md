@@ -3,7 +3,7 @@
 ## Introduction and motivation
 Genesis is a tool for data center automation. The primary motiviation for
 developing Genesis at Tumblr was to streamline the process of discovering new
-nodes and reporting their hardware details to our [inventory management
+machines and reporting their hardware details to our [inventory management
 system](https://github.com/tumblr/collins) without having to do a bunch of data
 entry by hand. In addition, we've also extended Genesis to be a convenient
 way to do hardware configuration such as altering BIOS settings and configuring
@@ -37,7 +37,7 @@ successful deployment. These are
 More detail on setting these up is documented in
 [INSTALL.md](https://github.com/tumblr/genesis/blob/master/INSTALL.md).
 
-When a node boots, the DHCP server tells the PXE firmware to chain boot into
+When a machine boots, the DHCP server tells the PXE firmware to chain boot into
 iPXE. We then use iPXE to present a list of menu choices, fetched from a remote
 server. When the user makes a choice we load the Genesis kernel and initrd (with
 the help of the TFTP server) along with parameters on the kernel command line.
@@ -48,7 +48,7 @@ tasks.
 
 For a real world example; Consider a brand new server that boots up. It makes a
 DHCP request and loads the iPXE menu. In this case, we know that we haven't seen
-this MAC address before, so it must be a new node. We boot Genesis in to
+this MAC address before, so it must be a new machine. We boot Genesis in to
 discovery mode, where the tasks it runs are written to fetch all the hardware
 information we need and report it back to the inventory management system. In
 our setup this includes information such as hard drives and their capacity and
