@@ -3,77 +3,76 @@ require 'genesisframework'
 # support testing using rake(1) directly
 
 ENV['GENESIS_ROOT'] ||= '/var/run/genesis'
-ENV['GENESIS_CONF'] ||= File.join(ENV['GENESIS_ROOT'], 'config.yaml')
 
 tasks_dir = File.join(ENV['GENESIS_ROOT'], 'tasks')
+timestamp_dir = File.join('/var/log', 'genesis')
 
 # TODO get these from the command line or ENV
 # these emulate what genesis currently gives best
 show_all = true
-dry_run = false
+dry_run = ENV.has_key? 'DRYRUN'
 
-Genesis::Framework::Tasks.load_config(ENV['GENESIS_CONF'])
+puts 'DRY RUN set' if dry_run
 
-ALL_FRAMEWORK_TASKS = Genesis::Framework::Tasks.load_tasks(tasks_dir)
-BASIC_TASKS = ALL_FRAMEWORK_TASKS.reject do |t|
-  # exclude the really dangerous tasks
-  # TODO add a property to the task to indicate if it is DANGEROUS.
-  [:TimedBurnin, :DestroyDiskContents, :VerifyProvisioningPrep].include?(t.to_s)
-end.map {|t| t.to_sym}
-
-ALL_FRAMEWORK_TASKS.each do |tsk|
-  desc "Run #{tsk} genesis task" if show_all
-  task tsk.to_sym do
-    if dry_run
-      puts " would run: genesys run #{tsk}"
-    else
-      Genesis::Framework::Tasks.execute tsk
-    end
-  end
+# TODO remove dead code once transition to OSS genesis is complete
+begin
+  # closed source genesis
+  Genesis::Framework::Tasks.parse_config(
+    Genesis::Framework::Utils.tmp_path("genesis_config.json"))
+rescue
+  # open source genesis
+  Genesis::Framework::Tasks.load_config(
+    File::join(ENV['GENESIS_ROOT'], 'config.yaml'))
 end
 
-######################
-# the following reflect boot menu tasks from genesis/web/views/ipxe_boot.erb
-# and genesis/web/genesis.rb genesis/*/tasks/GENESIS_MODE
-######################
+# a place to store timestamps of when the task last ran
+`mkdir -p #{timestamp_dir}` unless FileTest::directory?(timestamp_dir)
+
+ALL_FRAMEWORK_TASKS = Genesis::Framework::Tasks.load_tasks(tasks_dir)
+# lets group tasks by target
+targets = ALL_FRAMEWORK_TASKS.collect({}) do |memo, t_class|
+  t_class.targets.each do |target|
+    memo[target] = [] if !memo.has_key? target
+    memo[target] = memo[target].concat(t_class)
+  end
+  memo
+end
 
 desc 'No tasks run'
 task :util do
-  puts 'Done, but I am not doing anything'
+  puts 'Welcome to utility mode'
 end
 
-desc 'Register new asset with Collins and run machine setup'
-task :intake => BASIC_TASKS do
-  puts 'Done with intake'
+targets.each do |target, tasks|
+  namespaced_dependencies = tasks.map{|t| "#{target}:#{t}"}
+  desc "#{target} target"
+  task target => namespaced_dependencies do
+    puts " Executed target #{target} with tasks #{tasks.map(&:to_sym).inspect}"
+  end
+
+  # namespace underneath target to prevent creating duplicate tasks with
+  # the same names to avoid running tasks multiple times if they appear in
+  # multiple targets
+  namespace target do
+    # create tasks for all child tasks of the target
+    tasks.each do |tsk|
+      desc tsk.description if show_all
+      task tsk.to_sym => tsk.dependencies do
+        if dry_run
+          puts " not running #{target}:#{tsk} in dry-run"
+        else
+          Genesis::Framework::Tasks.execute tsk.to_sym
+        end
+      end
+    end
+  end
+
 end
 
-desc 'Send a new hardware report to Collins'
-task :hw_report => BASIC_TASKS do
-  puts 'Done with hardware report'
-end
 
-desc 'Intake and Burn-In'
-task :classic => [:intake, :TimedBurnin] do
-  puts 'Done with classic'
-end
-
-desc 'Stress test the hardware'
-task :burnin =>[:TimedBurnin] do
-  puts 'Done with burnin'
-end
-
-desc 'Run verification script and send notification to SRE team'
-task :verify_sh => [:VerifyScriptDownload] do
-  puts 'Done with verification'
-end
-
-# do another SystemReport since Collins should know about setup hardware raid
-desc 'Setup RAID array and make ready for provisioning'
-task :provision_prep => [:RaidSetupR720, :SystemReport, :VerifyProvisioningPrep] do
-  puts 'Done with provisioning prep'
-end
-
-desc 'Permanently destroy contents of attached disks'
-task :disk_wipe => [:DestroyDiskContents] do
-  puts 'Done with disk wipe'
+# each task should indicate when it ran (last)
+Rake::Task.tasks.each do |t|
+  t.enhance do
+    touch File.join(timestamp_dir, t.name + '.ran')
+  end
 end

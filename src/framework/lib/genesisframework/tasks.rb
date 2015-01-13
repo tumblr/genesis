@@ -39,8 +39,7 @@ module Genesis
         end
 
         @tasks = Genesis::Framework::Tasks.constants.select do |c|
-          Genesis::Framework::Tasks.const_get(c).include?(
-            Genesis::Framework::Task )
+          Genesis::Framework::Tasks.const_get(c).include?( Genesis::Framework::Task )
         end
 
         @tasks.sort!
@@ -117,7 +116,7 @@ module Genesis
           puts "task is sleeping for %d seconds..." % [sleep_interval]
           Kernel.sleep(sleep_interval)
         end
-        sucess = false if success.nil? # must have used all the retries, fail
+        success = false if success.nil? # must have used all the retries, fail
 
         if success
           success = self.call_block(task.blocks, :success)

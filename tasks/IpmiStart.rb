@@ -1,6 +1,9 @@
 class IpmiStart
   include Genesis::Framework::Task
 
+  set_attributes :test_attribute, :ipmi
+  wanted_by :intake
+
   init do
     install :rpm, 'dmidecode', 'OpenIPMI', 'OpenIPMI-tools', 'syscfg'
   end
@@ -16,5 +19,5 @@ class IpmiStart
   run do
     run_cmd('service ipmi start')
   end
-  
+
 end

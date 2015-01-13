@@ -1,6 +1,9 @@
 class TimedBurnin 
   include Genesis::Framework::Task
 
+  wanted_by :burnin, :intake
+  set_attributes :dangerous
+
   precondition "has asset tag?" do
     not facter['asset_tag'].nil?
   end

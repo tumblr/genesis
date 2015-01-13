@@ -15,21 +15,25 @@ module Genesis
       module TaskDslMethods
         attr_accessor :blocks, :options
 
-        def precondition description, &block 
-          add_block :precondition, description, block 
+        def description desc
+          add_description desc
         end
 
-        def init &block 
+        def precondition description, &block
+          add_block :precondition, description, block
+        end
+
+        def init &block
           set_block :init, block
         end
 
-        def condition description, &block 
-          add_block :condition, description, block 
+        def condition description, &block
+          add_block :condition, description, block
         end
 
         def run &block
-          set_block :run, block 
-        end 
+          set_block :run, block
+        end
 
         def rollback &block
           set_block :rollback, block
@@ -37,7 +41,7 @@ module Genesis
 
         def success &block
           set_block :success, block
-        end 
+        end
 
         def timeout secs
           set_option :timeout, secs
@@ -52,14 +56,14 @@ module Genesis
         end
 
         def collins
-          Genesis::Framework::Utils.collins 
+          Genesis::Framework::Utils.collins
         end
 
         def facter
           # lets cache the facts on first use
           # TODO symbolize these keys?
           # TODO implement method_missing? on this hash for easy access
-          Genesis::Framework::Utils.facter 
+          Genesis::Framework::Utils.facter
         end
 
         def run_cmd *cmd, stdin_data: '', return_both_streams: false, return_merged_streams: false
@@ -69,13 +73,13 @@ module Genesis
 
           if return_merged_streams
             output, status = Open3.capture2e(*cmd, stdin_data: stdin_data)
-          else 
+          else
             stdout, stderr, status = Open3.capture3(*cmd, stdin_data: stdin_data)
             if return_both_streams
               output = [stdout, stderr]
-            else 
-              output = stdout 
-            end 
+            else
+              output = stdout
+            end
           end
 
           if status.exitstatus != 0
@@ -87,10 +91,10 @@ module Genesis
         end
 
         def config
-          # We are intentionally causing a deep copy here so one task 
+          # We are intentionally causing a deep copy here so one task
           # can't pollute another task's config setup
           # TODO: consider possibly patching hash to not allow setting members?
-          @config ||= Marshal.load(Marshal.dump(Genesis::Framework::Utils.config_cache)) 
+          @config ||= Marshal.load(Marshal.dump(Genesis::Framework::Utils.config_cache))
         end
 
         def log message
@@ -116,7 +120,7 @@ module Genesis
             if $?.exitstatus != 0
               raise 'gem install exited with status: ' + $?.exitstatus.to_s
             end
-            
+
             # now need to clear out the Gem cache so we can load it
             Gem.clear_paths
 
@@ -128,38 +132,64 @@ module Genesis
         end
 
         def fetch what, filename, base_url: ENV['GENESIS_URL']
-          filepath = tmp_path(filename) 
+          filepath = tmp_path(filename)
           Genesis::RetryingFetcher.get(what, base_url) {|data| File.open(filepath, "w", 0755) { |file| file.write data }}
         end
 
         def tmp_path filename
-          Genesis::Framework::Utils.tmp_path(filename, self.class.name) 
+          Genesis::Framework::Utils.tmp_path(filename, self.class.name)
         end
 
         #############################################
 
-        def set_block sym, block 
-          self.init_defaults 
-          self.blocks[sym] = block 
+        def set_block sym, block
+          self.init_defaults
+          self.blocks[sym] = block
         end
 
         def add_block sym, description, block
-          self.init_defaults 
+          self.init_defaults
           if self.blocks[sym].has_key?(description)
             raise "Task defines multiple conditions with the same description"
           end
           self.blocks[sym][description] = block
         end
 
-        def set_option sym, option 
-          self.init_defaults 
-          self.options[sym] = option 
-        end 
+        def set_option sym, option
+          self.init_defaults
+          self.options[sym] = option
+        end
+
+        def depends_on *deps
+          self.init_defaults
+          self.dependencies = self.dependencies + deps.map(&:to_sym)
+        end
+
+        # what targets to participate in
+        def wanted_by *targets
+          self.init_defaults
+          self.targets = self.targets + targets
+        end
+
+        # Add arbitrary attributes to this task
+        def set_attributes *attrs
+          self.init_defaults
+          self.attributes = self.attributes + attrs
+        end
+
+        def add_description desc
+          self.init_defaults
+          self.description = desc
+        end
 
         def init_defaults
           self.blocks ||= { :precondition => {}, :init => nil, :condition => {}, :run => nil, :rollback => nil, :success => nil }
           self.options ||= { :retries => 3.times.to_a, :timeout => 0 }
-        end 
+          self.attributes ||= []
+          self.targets ||= []
+          self.dependencies ||= []
+          self.description ||= "no description"
+        end
 
       end
     end

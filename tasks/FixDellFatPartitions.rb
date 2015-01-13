@@ -1,6 +1,10 @@
 class FixDellFatPartitions
   include Genesis::Framework::Task
 
+  set_attributes :dangerous
+  depends_on :SomeTask
+  wanted_by :intake, :classic
+
   precondition "is Dell?" do
     facter['manufacturer'].match(/dell/i)
   end
@@ -27,16 +31,16 @@ class FixDellFatPartitions
         log "Found partition: " + part
         device = matches[1]
         partition_id = matches[2]
-       
+
         is_usb = run_cmd("readlink $(dirname $(dirname $(ls -d /sys/bus/scsi/devices/**/block/" + device + "))) | grep -i 'usb2' || true").lines.count > 0
 
-        if(!is_usb) 
+        if(!is_usb)
           log "Partition is not on a USB drive, so nuking..."
-          run_cmd("/sbin/parted -s /dev/" + device + " rm " + partition_id) 
+          run_cmd("/sbin/parted -s /dev/" + device + " rm " + partition_id)
           log "Partition successfully nuked..."
         end
       end
-    end 
+    end
   end
 
 end

@@ -1,6 +1,8 @@
 class BiosConfigrR720
   include Genesis::Framework::Task
 
+  wanted_by :intake
+
   precondition "has productname?" do
     not facter['productname'].nil?
   end
