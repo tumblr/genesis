@@ -17,7 +17,7 @@ the host.
 ## Tasks
 Tasks are created using the [Genesis
 DSL](https://github.com/tumblr/genesis/blob/master/tasks/README.md) which makes
-it easy to run commands, install packages, et.c. in the stripped down
+it easy to run commands, install packages, etc. in the stripped down
 environment.
 
 Examples of tasks are the
@@ -60,7 +60,7 @@ the TimedBurnin task.
 ## Test environment
 To avoid testing Genesis in production, we've set up a virtual  test environment
 based on VirtualBox. This allows for end-to-end testing of changes to the
-framework, new tasks, et.c.
+framework, new tasks, etc.
 
 More information about the test environment and setting it up can be found in
 [testenv/README.md](https://github.com/tumblr/genesis/blob/master/testenv/README.md).
