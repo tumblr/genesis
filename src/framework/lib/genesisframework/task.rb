@@ -4,6 +4,7 @@ require 'retryingfetcher'
 require 'promptcli'
 require 'facter'
 require 'open3'
+require 'set'
 
 module Genesis
   module Framework
@@ -13,7 +14,7 @@ module Genesis
       end
 
       module TaskDslMethods
-        attr_accessor :blocks, :options, :targets, :dependencies, :description
+        attr_accessor :blocks, :options, :description
 
         def description desc
           add_description desc
@@ -53,20 +54,6 @@ module Genesis
           else
             set_option :retries, count.times.to_a
           end
-        end
-
-        # register this task as needing to run after the following tasks
-        # deps is varargs of TaskClassNames
-        def after_tasks *deps
-          self.init_defaults
-          self.dependencies = self.dependencies + deps.map(&:to_sym)
-        end
-
-        # what targets to participate in
-        # targets is varargs of target names (i.e. burnin, intake)
-        def wanted_by *targets
-          self.init_defaults
-          self.targets = self.targets + targets
         end
 
         # description of what this task does
@@ -186,9 +173,7 @@ module Genesis
         def init_defaults
           self.blocks ||= { :precondition => {}, :init => nil, :condition => {}, :run => nil, :rollback => nil, :success => nil }
           self.options ||= { :retries => 3.times.to_a, :timeout => 0 }
-          self.targets ||= []
-          self.dependencies ||= []
-          self.description ||= "no description"
+          self.description ||= nil
         end
 
       end

@@ -2,7 +2,6 @@ class IpmiStart
   include Genesis::Framework::Task
 
   description "Start up the IPMI services"
-  wanted_by :intake
 
   init do
     install :rpm, 'dmidecode', 'OpenIPMI', 'OpenIPMI-tools', 'syscfg'

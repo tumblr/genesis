@@ -2,8 +2,6 @@ class BiosConfigrC6105
   include Genesis::Framework::Task
 
   description "Configure BIOS for C6105"
-  wanted_by :intake
-  after_tasks :AssetCreation
 
   precondition "has productname?" do
     not facter['productname'].nil?

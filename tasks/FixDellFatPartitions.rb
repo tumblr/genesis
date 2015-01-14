@@ -2,8 +2,6 @@ class FixDellFatPartitions
   include Genesis::Framework::Task
 
   description "Wipe any existing FAT partitions on all disks for Dells"
-  after_tasks :SomeTask
-  wanted_by :intake, :classic
 
   precondition "is Dell?" do
     facter['manufacturer'].match(/dell/i)

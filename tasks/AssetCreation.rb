@@ -3,7 +3,6 @@ class AssetCreation
 
   description "Create asset if not yet in Collins"
   retries [0,1,5,10,21,33,33,33,39,42,60,60,60,90,120,300].to_enum
-  wanted_by :intake
 
   precondition "has asset tag?" do
     not facter['asset_tag'].nil?

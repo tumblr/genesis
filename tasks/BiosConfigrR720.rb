@@ -2,8 +2,6 @@ class BiosConfigrR720
   include Genesis::Framework::Task
 
   description "Configure BIOS for R720s"
-  wanted_by :intake
-  after_tasks :AssetCreation
 
   precondition "has productname?" do
     not facter['productname'].nil?
