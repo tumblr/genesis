@@ -8,13 +8,14 @@ Gem::Specification.new do |gem|
   gem.email = 'opensourcesoftware@tumblr.com'
 
   gem.date = '2014-12-29'
-  gem.version = '0.5.1'
+  gem.version = '0.5.2'
   gem.add_dependency('genesis_promptcli', '~> 0.2', '>= 0.2.0')
   gem.add_dependency('genesis_retryingfetcher', '~> 0.4', '>= 0.4.0')
   gem.add_dependency('collins_client', '~> 0.2', '>= 0.2.0')
   gem.add_dependency('facter', '~> 2.0', '>= 2.0.0')
 
-  gem.files = Dir["bin/*", "lib/**/*", "*.md", "*.txt", "test/*.rb"]
+  gem.files = Dir["bin/*", "lib/**/*", "*.md", "*.txt", "test/*.rb"].reject do |f|
+    f[%r{~$|^#|\.bak$}]
+  end
   gem.executables << "genesis"
 end
-

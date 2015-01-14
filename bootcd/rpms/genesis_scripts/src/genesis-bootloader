@@ -24,7 +24,7 @@ end
 
 GENESIS_MODE = getoption 'GENESIS_MODE', 'intake'
 GENESIS_CONF_URL = getoption 'GENESIS_CONF_URL'
-GENESIS_RAID_LEVEL = 'GENESIS_RAID_LEVEL'
+GENESIS_RAID_LEVEL = getoption 'GENESIS_RAID_LEVEL'
 
 puts ''
 puts 'Genesis operating mode is: %s' % [GENESIS_MODE]
