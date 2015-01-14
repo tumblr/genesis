@@ -14,10 +14,10 @@ module Genesis
       end
 
       module TaskDslMethods
-        attr_accessor :blocks, :options, :description
+        attr_accessor :blocks, :options
 
         def description desc
-          add_description desc
+          set_option :description, desc
         end
 
         def precondition description, &block
@@ -54,12 +54,6 @@ module Genesis
           else
             set_option :retries, count.times.to_a
           end
-        end
-
-        # description of what this task does
-        def add_description desc
-          self.init_defaults
-          self.description = desc
         end
 
         def collins
@@ -172,8 +166,7 @@ module Genesis
 
         def init_defaults
           self.blocks ||= { :precondition => {}, :init => nil, :condition => {}, :run => nil, :rollback => nil, :success => nil }
-          self.options ||= { :retries => 3.times.to_a, :timeout => 0 }
-          self.description ||= nil
+          self.options ||= { :retries => 3.times.to_a, :timeout => 0, :description => nil }
         end
 
       end

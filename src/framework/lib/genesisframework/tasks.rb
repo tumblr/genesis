@@ -12,7 +12,8 @@ module Genesis
           ## TODO: consider tokenizing the keys of the hash? needed???
           Genesis::Framework::Utils.config_cache = YAML::load(data)
         rescue Exception => e
-          puts "Caught exception parsing config %s file: $s" % [file, e.message]
+          puts "Caught exception parsing config %s file: %s" % [file, e.message]
+          raise e
         end
       end
 
@@ -30,11 +31,13 @@ module Genesis
         $:.unshift File.join(File.expand_path(dir),'modules')
         puts "\nParsing tasks from directory: %s" % [dir]
 
-        Dir.glob(dir + '/*.rb') do |f|
+        Dir.glob(File.join(dir,'*.rb')) do |f|
           begin
+            puts "Loading task #{f}"
             Genesis::Framework::Tasks.class_eval File.read(f)
           rescue Exception => e
-            puts "Caught exception parsing %s file: %s" % [f, e.message]
+            puts "Caught exception parsing task %s: %s" % [f, e.message]
+            raise e
           end
         end
 
