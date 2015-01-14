@@ -33,7 +33,6 @@ module Genesis
 
         Dir.glob(File.join(dir,'*.rb')) do |f|
           begin
-            puts "Loading task #{f}"
             Genesis::Framework::Tasks.class_eval File.read(f)
           rescue Exception => e
             puts "Caught exception parsing task %s: %s" % [f, e.message]
