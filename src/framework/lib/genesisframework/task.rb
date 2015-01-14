@@ -4,7 +4,6 @@ require 'retryingfetcher'
 require 'promptcli'
 require 'facter'
 require 'open3'
-require 'set'
 
 module Genesis
   module Framework
