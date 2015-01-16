@@ -45,11 +45,11 @@ util:
   tasks: []
 ```
 
-Each top level key is a target name, containing an optional description as ```description```, and a required list of task classes at ```tasks```. In the provided ```Rakefile```, we flatten the ```tasks``` so you can leverage tagged lists in YAML to leverage some "inheritance", as you can see in the ```classic``` target. Tasks are executed sequentially, and ordering ```[A,B,C]``` implies that task C cannot be run until A and then B are run.
+Each top level key is a target name, containing an optional description with the key ```description```, and the required key ```tasks``` is a list list of classes to run. In the provided ```Rakefile```, we flatten the ```tasks``` so you can leverage tagged lists in YAML to leverage some "inheritance", as you can see in the ```classic``` target. Tasks are executed sequentially, and ordering ```[A,B,C]``` implies that task C cannot be run until A and then B are run.
 
 ## Running Targets
 
-The ```targets.yaml``` is consumed by the provided Rakefile to generate a list of tasks, and handle setting up the dependencies. Genesis will automatically launch the rake task specified by the ```GENESIS_MODE``` kernel parameter passed via ipxe.
+The ```targets.yaml``` is used by the provided Rakefile to create a list of tasks, and handle setting up their dependencies. Genesis will automatically launch the rake task specified by the ```GENESIS_MODE``` kernel parameter passed via ipxe.
 
 For example, booting your kernel with ```GENESIS_MODE=intake``` will automatically execute the ```intake``` rake task when Genesis is booted.
 
