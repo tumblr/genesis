@@ -27,7 +27,7 @@ Clear mock data, if trying to rebuild gives you a file or directory not found er
 
 ```mock --scrub=all```  
 
-Build the rpm
+Build the rpm (ensure the src rpm version is correct, when copy-pasting from here, it is likely to be incorrect)
 
 ```mock -r epel-6-x86_64 --rebuild genesis_scripts-0.2-3.el6.src.rpm```
 
