@@ -9,6 +9,7 @@ stop on runlevel [S016]
 
 respawn
 instance $TTY
-exec /sbin/agetty -8 -n -l /root/login-shell 115200 $TTY
-#exec /sbin/mingetty --autologin root $TTY
+# TODO fix this to connect to the console
+exec /sbin/mingetty --autologin root $TTY
+#exec /sbin/agetty -8 -n -l /root/login-shell 115200 $TTY
 usage 'tty TTY=/dev/ttyX  - where X is console id'
