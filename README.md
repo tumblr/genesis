@@ -14,7 +14,7 @@ From a high-level point of view, Genesis consists of a stripped down linux image
 suitable to boot over PXE and a ruby DSL for describing tasks to be executed on
 the host.
 
-This repository also includes a (test environment)[https://github.com/tumblr/genesis/tree/master/testenv] 
+This repository also includes a [test environment](https://github.com/tumblr/genesis/tree/master/testenv) 
 which is suitable for building the linux image.
 
 ## Tasks
