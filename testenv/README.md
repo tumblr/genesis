@@ -88,7 +88,8 @@ The following details have a line of descriptive text, details on what the bootb
 6. [Stage2](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/stage2.erb.sample) includes site specific genesis startup.  setup yum repos, load framework gem, download tasks, start genesis task
 
 * How to test or develop
-Following is basic information about testing or developing the different parts of genesis and the test environment.  When I say "boot the target" you can do that or use the snooper host to manually run genesis-bootstrap instead.
+
+Following is basic information about testing or developing the different parts of genesis and the test environment. When I say "boot the target" you can do that or use the snooper host to manually run genesis-bootstrap instead.
 
 * Updating a Gem
  - Modify source
@@ -101,7 +102,7 @@ Following is basic information about testing or developing the different parts o
 
 * Modifying Stage2
  - edit testenv/bootbox/puppet/modules/genesis/templates/stage2.erb
- - vagrant up or vagrant provision to install it on bootbox
+ - ```vagrant up``` or ```vagrant provision``` to install it on bootbox
  - boot the target
 
 * genesis-bootstrap
