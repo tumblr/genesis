@@ -1,6 +1,6 @@
 Name:           genesis_scripts
 Version:        0.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License, 2.0
 URL:            http://tumblr.github.io/genesis
 BuildArch:      noarch
@@ -10,6 +10,7 @@ Source1:        src/init.d-network-prep
 Source2:        src/sysconfig-init.diff 
 Source3:        src/tty.conf.override
 Source4:        src/genesis-bootloader
+Source5:        src/login-shell
 Summary:        Scripts used by Genesis in the bootcd image
 Group:          System Environment/Base  
 Requires:       initscripts rootfiles patch
@@ -36,6 +37,9 @@ install -m 755 -T %{SOURCE1}   $RPM_BUILD_ROOT/etc/init.d/network-prep
 install -m 644 -T %{SOURCE2}   $RPM_BUILD_ROOT/etc/sysconfig/init.diff
 install -m 644 -T %{SOURCE3}   $RPM_BUILD_ROOT/etc/init/tty.conf.override
 
+# add helper for agetty
+install -m 555 -T %{SOURCE5}   $RPM_BUILD_ROOT/root/login-shell
+
 # add the bootloader
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
 install -m 555 -T %{SOURCE4}   $RPM_BUILD_ROOT/usr/bin/genesis-bootloader
@@ -50,10 +54,10 @@ install -m 555 -T %{SOURCE4}   $RPM_BUILD_ROOT/usr/bin/genesis-bootloader
 %config /etc/init/tty.conf.override
 %config /root/.bash_profile.genesis_scripts
 /usr/bin/genesis-bootloader
+/root/login-shell
 
 %post 
 cat /root/.bash_profile.genesis_scripts >> /root/.bash_profile
-cp  /etc/init/tty.conf.override /etc/init/tty.conf
 /usr/bin/patch /etc/sysconfig/init < /etc/sysconfig/init.diff
 chkconfig --add network-prep
 

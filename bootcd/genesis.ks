@@ -153,9 +153,10 @@ __EOF__
 
 
 echo '>>>> rewriting /etc/issue'
-cat > /etc/issue <<EOF
+cat <<EOF > /etc/issue
 Genesis OS v0.1
 Kernel \r
+BuildDate: $(date)
 
 EOF
 
