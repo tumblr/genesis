@@ -49,7 +49,14 @@ Each top level key is a target name, containing an optional description as ```de
 
 ## Running Targets
 
-The ```targets.yaml``` is consumed by the provided Rakefile to generate a list of tasks, and handle setting up the dependencies. Your
+The ```targets.yaml``` is consumed by the provided Rakefile to generate a list of tasks, and handle setting up the dependencies. Genesis will automatically launch the rake task specified by the ```GENESIS_MODE``` kernel parameter passed via ipxe.
+
+For example, booting your kernel with ```GENESIS_MODE=intake``` will automatically execute the ```intake``` rake task when Genesis is booted.
+
+To test your ordering, you could run something like
+
+    user@host tasks $ DRYRUN=true GENESIS_CONFIG=../myconfig.yaml GENESIS_TASKS_DIR=. GENESIS_LOG_DIR=/tmp rake intake
+
 
 ## Customizing for your environment
 
