@@ -26,7 +26,9 @@ mock -r epel-6-x86_64 --rebuild genesis_scripts-0.2-3.el6.src.rpm
  - Resulting RPM can be found in /var/lib/mock/epel-6-x86/result
  - Copy the RPM into [bootcd/rpms](https://github.com/tumblr/genesis/tree/master/bootcd/rpms)
    - ```cp /var/lib/mock/epel-6-x86_64/result/genesis_scripts-0.5-3.el6.noarch.rpm ../```
- - Save the RPM where create-image.sh can find it
+   - The ```create-image.sh`` script will look for the
+ - Create the Genesis boot image
+   - ```cd ../..; sudo ./create-image.sh```
  - [optional] Also copy it into the shared testenv directory of the host machine
 
 `cp genesis_scripts-0.2-3.el6.x86_64.rpm /vagrant`
