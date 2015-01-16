@@ -6,7 +6,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "sl-base-v4.3.10"
-  config.vm.box_url = "http://nexus.example.com/vagrant_boxes/sl-base-v4.3.10.box"
+  config.vm.box_url = "https://www.dropbox.com/s/pvydgdcnf4o00im/sl-base-v4.3.10.box?dl=1"
 
   config.vm.hostname = 'genesis-bootbox'
   
