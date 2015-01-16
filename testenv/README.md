@@ -24,10 +24,13 @@ PXE.
 
 ## Configuration:
 
-1. copy Vagrantfile.sample to Vagrantfile adjusting as needed
-2. copy bootbox/puppet/manifests/bootbox.pp.sample to bootbox.pp and adjust
-3. copy bootbox/puppet/modules/genesis/templates/config.yaml.erb.sample
-4. copy bootbox/puppet/modules/genesis/templates/stage2.erb.sample
+The testenv has configuration options available in vagrant and puppet
+
+You can customize these in
+1. Vagrantfile
+2. bootbox/puppet/manifests/bootbox.pp
+3. bootbox/puppet/modules/genesis/templates/config.yaml.erb
+4. bootbox/puppet/modules/genesis/templates/stage2.erb.
 
 and modify settings as desired.
 
