@@ -84,8 +84,8 @@ The following details have a line of descriptive text, details on what the bootb
 3. iPXE menu boots genesis image
 4. kernel loads and starts
 5. On boot-up, genesis-bootloader in launched via a specification in [/root/.bash_profile](https://github.com/tumblr/genesis/blob/master/bootcd/rpms/genesis_scripts/src/root-bash_profile)
-5. genesis-bootloader downloads config.yaml and stage2 using the (bootbox file server)[https://github.com/tumblr/genesis/blob/master/testenv/bootbox/web/genesis.rb] then starts stage2
-6. (Stage2)[https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/stage2.erb.sample] includes site specific genesis startup.  setup yum repos, load framework gem, download tasks, start genesis task
+5. genesis-bootloader downloads config.yaml and stage2 using the [bootbox file server](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/web/genesis.rb) then starts stage2
+6. [Stage2](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/stage2.erb.sample) includes site specific genesis startup.  setup yum repos, load framework gem, download tasks, start genesis task
 
 * How to test or develop
 Following is basic information about testing or developing the different parts of genesis and the test environment.  When I say "boot the target" you can do that or use the snooper host to manually run genesis-bootstrap instead.
