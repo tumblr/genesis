@@ -1,0 +1,33 @@
+intake:
+  description: Perform intake on hardware
+  tasks_array: &intake_tasks
+  - SetupNTP
+  - IpmiStart
+  - AssetCreation
+  - BiosConfigrC6105
+  - BiosConfigrR720
+  - FixDellFatPartitions
+  tasks:
+  - *intake_tasks
+  - Reboot
+burnin:
+  description: Cook CPUs
+  tasks: &burnin_tasks
+  - TimedBurnin
+reboot:
+  description: Reboot the machine
+  tasks:
+  - Reboot
+shutdown:
+  description: Halt the machine
+  tasks:
+  - Shutdown
+classic:
+  description: Run intake, burnin, then shutdown
+  tasks:
+  - *intake_tasks
+  - *burnin_tasks
+  - Shutdown
+util:
+  description: Utility Shell
+  tasks: []
