@@ -1,34 +1,46 @@
 # Boot image
-This directory for building the image that is booted to run genesis
-tasks.  After they are built, copy the files in ./output/ to where
-they are expected by the net-booting process.
+This directory contains sources for building the image that is booted to run genesis
+tasks. You can use the [test environment]() to build the genesis image, or use a SL6 
+installation.
 
 ## Pre-requisites:
+
+Pre-requisites are installed when using the test environment and include
+
 - livecd-tools and createrepo RPMs installed
 - python and SimpleHTTPServer module
 
-## Building the boot image:
-- Checkout code on a linux node, or on the testenv bootbox do `cd /genesis/bootcd`
-- Build ruby stable if desired
-- Build RPMs in rpms/ (see below)
-- `sudo ./create-image.sh` to create the initrd and kernel
-- Copy it from output to where PXEboot is expecting it
+## Building the Genesis Scripts RPM:
 
-## Building the RPMs:
+The Genesis scripts rpm includes scripts and configuration files used by Genesis in the bootcd image
+
  - Bring up the testenv and ssh into the bootbox
  - Build the RPMs using rpmbuild and mock:
-```
-cd /genesis/bootcd/rpms/genesis_scripts
-rpmbuild --define '_tmppath /tmp' --define '_sourcedir src' --define '_srcrpmdir .' --nodeps -bs genesis_scripts.spec
-mock --scrub=all`    # if trying to rebuild gives you a file or directory not found error
-mock -r epel-6-x86_64 --rebuild genesis_scripts-0.2-3.el6.src.rpm
-```
+ 
+```cd /genesis/bootcd/rpms/genesis_scripts```
+
+Build the source rpm
+
+```rpmbuild --define '_tmppath /tmp' --define '_sourcedir src' --define '_srcrpmdir .' --nodeps -bs genesis_scripts.spec```
+
+Clear mock data, if trying to rebuild gives you a file or directory not found error
+
+```mock --scrub=all```  
+
+Build the rpm
+
+```mock -r epel-6-x86_64 --rebuild genesis_scripts-0.2-3.el6.src.rpm```
+
  - Resulting RPM can be found in /var/lib/mock/epel-6-x86/result
  - Copy the RPM into [bootcd/rpms](https://github.com/tumblr/genesis/tree/master/bootcd/rpms)
    - ```cp /var/lib/mock/epel-6-x86_64/result/genesis_scripts-0.5-3.el6.noarch.rpm ../```
-   - The ```create-image.sh`` script will look for the
- - Create the Genesis boot image
-   - ```cd ../..; sudo ./create-image.sh```
- - [optional] Also copy it into the shared testenv directory of the host machine
+   - The ```create-image.sh``` script will look for the RPM in this location
 
-`cp genesis_scripts-0.2-3.el6.x86_64.rpm /vagrant`
+## Building the boot image:
+ - Create the Genesis boot image
+   - ```cd /genesis/bootcd```
+   - ```sudo ./create-image.sh```
+   - The ```create-image``` script will create the initrd and kernel
+
+## Deploying the boot image:
+ - Copy the files from the output to where PXEBoot is expecting it, this is typically your file server.
