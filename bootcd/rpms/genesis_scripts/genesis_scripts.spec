@@ -1,6 +1,6 @@
 Name:           genesis_scripts
 Version:        0.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License, 2.0
 URL:            http://tumblr.github.io/genesis
 BuildArch:      noarch
@@ -58,6 +58,8 @@ install -m 555 -T %{SOURCE4}   $RPM_BUILD_ROOT/usr/bin/genesis-bootloader
 
 %post 
 cat /root/.bash_profile.genesis_scripts >> /root/.bash_profile
+# TODO undo this hack
+cp  /etc/init/tty.conf.override /etc/init/tty.conf
 /usr/bin/patch /etc/sysconfig/init < /etc/sysconfig/init.diff
 chkconfig --add network-prep
 
