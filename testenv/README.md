@@ -41,7 +41,7 @@ and modify settings as desired.
 
 * All packages needed on the bootbox Vagrant VM to simulate the prod env are installed via puppet apply. See the puppet dir inside bootbox/ to see the manifests applied to the VM on startup. The puppet manifests applied to the VM on startup are in [bootbox](https://github.com/tumblr/genesis/tree/master/testenv/bootbox)
 * Network booting goes across a virtualbox private network named 'genesis'
-* Password for the bootbox follows normal vagrant scheme and can be ssh'd into via localhost:2222 (or vagrant ssh)
+* Password for the bootbox follows normal vagrant scheme and can be ssh'd into via vagrant ssh
 * vagrant sets up sharing of this directory tree under /genesis on the genesis-bootbox
 
 ## Bootbox details:
