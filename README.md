@@ -17,6 +17,11 @@ the host.
 This repository also includes a [test environment](https://github.com/tumblr/genesis/tree/master/testenv) 
 which is suitable for building the linux image.
 
+## Framework
+
+The [Genesis framework](https://github.com/tumblr/genesis/tree/master/src/framework) and
+supporting gem can be found in [src](https://github.com/tumblr/genesis/tree/master/src)
+
 ## Tasks
 Tasks are created using the [Genesis
 DSL](https://github.com/tumblr/genesis/blob/master/tasks/README.md) which makes
