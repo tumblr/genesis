@@ -84,5 +84,13 @@ Example:
 
 Returns a temporary file with the specified name.
 
+`tmp_path filename` returns a temporary file named *filename*
+
+`description "My task description here"` sets the description of the Task, to appear in things like ```rake -T```
+
+## Targets and Tasks
+
+Tasks are grouped into top-level "targets", similar to systemd targets. You can specify what tasks belong to what target (and the order they execute in) in ```targets.yaml```, bundled in your tasks directory.
+
 Example:
 [BiosConfigrC6105.rb](https://github.com/tumblr/genesis/blob/master/tasks/BiosConfigrC6105.rb#L22)

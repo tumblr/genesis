@@ -1,0 +1,88 @@
+require 'genesisframework'
+require 'yaml'
+
+# support testing using rake(1) directly
+
+root_dir = ENV['GENESIS_ROOT'] || '/var/run/genesis'
+tasks_dir = ENV['GENESIS_TASKS_DIR'] || File.join(root_dir,'tasks')
+log_dir = ENV['GENESIS_LOG_DIR'] || '/var/log/genesis'
+config_file = ENV['GENESIS_CONFIG'] || File::join(root_dir, 'config.yaml')
+dry_run = ENV.has_key? 'DRYRUN'
+
+puts 'DRY RUN set' if dry_run
+
+# TODO remove dead code once transition to OSS genesis is complete
+begin
+  # closed source genesis
+  Genesis::Framework::Tasks.parse_config(
+    Genesis::Framework::Utils.tmp_path("genesis_config.json"))
+rescue
+  # open source genesis
+  Genesis::Framework::Tasks.load_config(config_file)
+end
+
+# a place to store timestamps of when the task last ran
+`mkdir -p #{log_dir}` unless FileTest::directory?(log_dir)
+
+# load up the targets.yaml
+targets_file = File.join(tasks_dir,'targets.yaml')
+raise "No targets.yaml file found in the task bundle at #{tasks_dir}! You need to provide a targets.yaml to define targets and tasks" unless File.readable? targets_file
+begin
+  target_config = YAML.load_file(targets_file)
+  # in order to support joining arrays of tasks in yaml with !join, lets flatten every tasks list
+  target_config.each do |target_name, target|
+    raise "Target #{target_name} is missing a 'tasks' key! If you meant no tasks, use []" if target['tasks'].nil?
+    target['tasks'].flatten! unless target['tasks'].nil?
+  end
+rescue => e
+  raise "Unable to parse targets definitions (#{targets_file}): #{e.message}"
+end
+
+Genesis::Framework::Tasks.load_tasks(tasks_dir)
+
+target_config.each do |target_name, config|
+  # translate tasks into their loaded modules
+  tasks_as_syms = (config['tasks'] || []).map(&:to_sym)
+  tasks = tasks_as_syms.map do |task_name|
+    begin
+      Genesis::Framework::Tasks.const_get(task_name)
+    rescue NameError => e
+      raise "Unable to find task #{task_name} in target #{target_name} that includes Genesis::Framework::Task! Is it part of your tasks bundle? #{e.message}"
+    end
+  end
+
+  # create the master rake task for this target
+  desc (config['description'] || "#{target_name} target")
+  task target_name => "#{target_name}:all"
+
+  # namespace underneath target to prevent creating duplicate tasks with
+  # the same names to avoid running tasks multiple times if they appear in
+  # multiple targets
+  namespace target_name do
+    task :all => tasks_as_syms
+    # create tasks for all child tasks of the target
+    tasks.each_with_index do |tsk,i|
+      task_name = tasks_as_syms[i]
+      prev_task_name = tasks_as_syms[i-1] unless i==0
+      desc tsk.options.fetch(:description, task_name)
+      task task_name do
+        if dry_run
+          puts " not running #{target_name}:#{task_name} in dry-run"
+        else
+          Genesis::Framework::Tasks.execute task_name
+        end
+      end
+      # create the dependency chain if there is a next task
+      task(task_name => prev_task_name) unless prev_task_name.nil?
+    end
+  end
+end
+
+
+#TODO remove this, or convert it to logging to a file
+# each task should indicate when it ran (last)
+Rake::Task.tasks.each do |t|
+  t.enhance do
+    touch File.join(log_dir, t.name + '.ran')
+  end
+end

@@ -4,7 +4,7 @@ Gem::Specification.new do |gem|
   gem.license = 'Apache License, 2.0'
   gem.summary = %q{Generic server onboarding framework}
   gem.description = %q{Genesis is a project used to manage provisioning of hardware. This is the framework which runs the specified tasks.}
-  gem.authors = ["Jeremy Johnstone", 'Roy Marantz']
+  gem.authors = ["Jeremy Johnstone", 'Roy Marantz', 'Gabe Conradi']
   gem.email = 'opensourcesoftware@tumblr.com'
 
   gem.date = '2014-12-29'

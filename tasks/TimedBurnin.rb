@@ -1,6 +1,8 @@
 class TimedBurnin 
   include Genesis::Framework::Task
 
+  description "Performs burnin for a specified duration"
+
   precondition "has asset tag?" do
     not facter['asset_tag'].nil?
   end

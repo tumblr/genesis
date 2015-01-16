@@ -1,6 +1,8 @@
 class BiosConfigrR720
   include Genesis::Framework::Task
 
+  description "Configure BIOS for R720s"
+
   precondition "has productname?" do
     not facter['productname'].nil?
   end

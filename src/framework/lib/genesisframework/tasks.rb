@@ -11,8 +11,8 @@ module Genesis
 
           ## TODO: consider tokenizing the keys of the hash? needed???
           Genesis::Framework::Utils.config_cache = YAML::load(data)
-        rescue Exception => e
-          puts "Caught exception parsing config %s file: $s" % [file, e.message]
+        rescue => e
+          raise "Unable to parse config %s: %s" % [file, e.message]
         end
       end
 
@@ -30,17 +30,16 @@ module Genesis
         $:.unshift File.join(File.expand_path(dir),'modules')
         puts "\nParsing tasks from directory: %s" % [dir]
 
-        Dir.glob(dir + '/*.rb') do |f|
+        Dir.glob(File.join(dir,'*.rb')) do |f|
           begin
             Genesis::Framework::Tasks.class_eval File.read(f)
-          rescue Exception => e
-            puts "Caught exception parsing %s file: %s" % [f, e.message]
+          rescue => e
+            raise "Error parsing task %s: %s" % [f, e.message]
           end
         end
 
         @tasks = Genesis::Framework::Tasks.constants.select do |c|
-          Genesis::Framework::Tasks.const_get(c).include?(
-            Genesis::Framework::Task )
+          Genesis::Framework::Tasks.const_get(c).include?( Genesis::Framework::Task )
         end
 
         @tasks.sort!
@@ -69,8 +68,8 @@ module Genesis
               end
             end
           end
-        rescue Exception => e
-          puts "%s task threw Exception on testing if it needs initialization: %s" % [task_name, e.message]
+        rescue => e
+          puts "%s task had error on testing if it needs initialization: %s" % [task_name, e.message]
           return false
         end
 
@@ -78,8 +77,8 @@ module Genesis
           puts "task is now initializing..."
           self.call_block(task.blocks, :init);
           puts "task is now initialized..."
-        rescue Exception => e
-          puts "%s task threw Exception on initialization: %s" % [task_name, e.message]
+        rescue => e
+          puts "%s task threw error on initialization: %s" % [task_name, e.message]
           return false
         end
 
@@ -94,8 +93,8 @@ module Genesis
               end
             end
           end
-        rescue Exception => e
-          puts "%s task threw Exception on testing if it needs running: %s" % [task_name, e.message]
+        rescue => e
+          puts "%s task had error on testing if it needs running: %s" % [task_name, e.message]
           return false
         end
 
@@ -109,15 +108,15 @@ module Genesis
             end
             # a run block should raise an error or be false for a failure
             success = true if success.nil?
-          rescue Exception => e
-             puts "%s task [run #%d] caused exception: %s" % [task_name, attempt, e.message]
+          rescue => e
+             puts "%s task [run #%d] caused error: %s" % [task_name, attempt, e.message]
              success = nil      # cause a retry
           end
           break unless success.nil? # if we got an answer, we're done
           puts "task is sleeping for %d seconds..." % [sleep_interval]
           Kernel.sleep(sleep_interval)
         end
-        sucess = false if success.nil? # must have used all the retries, fail
+        success = false if success.nil? # must have used all the retries, fail
 
         if success
           success = self.call_block(task.blocks, :success)

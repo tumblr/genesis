@@ -4,7 +4,7 @@ require 'facter'
 
 module Genesis
   module Framework
-    module Utils 
+    module Utils
       def self.tmp_path filename, sandbox = ""
         location = File.join(ENV['GENESIS_ROOT'], "tmp", sandbox)
         Dir.mkdir(location, 0755) unless File.directory? location
@@ -16,9 +16,9 @@ module Genesis
       @@facter = nil
 
       # mimicking rail's cattr_accessor
-      def self.config_cache 
+      def self.config_cache
         @@config_cache
-      end 
+      end
 
       def self.config_cache= (obj)
         @@config_cache = obj
@@ -33,7 +33,7 @@ module Genesis
         @@collins_conn
       end
 
-      def self.facter 
+      def self.facter
         if @@facter.nil?
           @@facter = Facter.to_hash
         end
@@ -51,5 +51,5 @@ module Genesis
         end
       end
     end
-  end 
+  end
 end
