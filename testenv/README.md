@@ -38,7 +38,10 @@ and modify settings as desired.
 
 1. Import the testnode.ova virtual machine image into Virtualbox 
 2. Go into the testenv/bootbox folder and run ```vagrant up```
-3. Once the vagrant machine is running, start the imported virtual machine and it will network boot from the vagrant box
+3. Once the vagrant machine is running, follow the [bootcd build
+   instructions](https://github.com/tumblr/genesis/blob/master/bootcd/README.md)
+   to build the images.
+4. Start the imported virtual machine and it will network boot from the vagrant box
 
 ## Notes:
 
