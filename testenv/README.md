@@ -27,6 +27,7 @@ PXE.
 The testenv has configuration options available in vagrant and puppet
 
 You can customize these in
+
 1. Vagrantfile
 2. bootbox/puppet/manifests/bootbox.pp
 3. bootbox/puppet/modules/genesis/templates/config.yaml.erb
