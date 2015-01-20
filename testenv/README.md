@@ -39,14 +39,37 @@ and modify settings as desired.
 
 1. Import the testnode.ova virtual machine image into Virtualbox 
 2. Go into the testenv/bootbox folder and run ```vagrant up```
-3. Once the vagrant machine is running, follow the [bootcd build
+3. Once the vagrant machine is running, use it to build the gems for the boot
+   image. See also
+   [src/README](https://github.com/tumblr/genesis/blob/master/src/README.md).
+```
+[vagrant@genesis-bootbox ~]$ cd /genesis/src/
+[vagrant@genesis-bootbox src]$ for gem in framework promptcli retryingfetcher; do cd $gem; gem build "genesis_$gem.gemspec"; cd ..; done
+WARNING:  no rubyforge_project specified
+  Successfully built RubyGem
+  Name: genesis_framework
+  Version: 0.5.2
+  File: genesis_framework-0.5.2.gem
+WARNING:  no rubyforge_project specified
+  Successfully built RubyGem
+  Name: genesis_promptcli
+  Version: 0.2.0
+  File: genesis_promptcli-0.2.0.gem
+WARNING:  no rubyforge_project specified
+  Successfully built RubyGem
+  Name: genesis_retryingfetcher
+  Version: 0.4.0
+  File: genesis_retryingfetcher-0.4.0.gem
+```
+4. Follow the [bootcd build
    instructions](https://github.com/tumblr/genesis/blob/master/bootcd/README.md)
    to build the images.
-4. Start the imported virtual machine and it will network boot from the vagrant box
+5. Start the imported virtual machine and it will network boot from the vagrant box
 
 ## Notes:
 
 * All packages needed on the bootbox Vagrant VM to simulate the prod env are installed via puppet apply. See the puppet dir inside bootbox/ to see the manifests applied to the VM on startup. The puppet manifests applied to the VM on startup are in [bootbox](https://github.com/tumblr/genesis/tree/master/testenv/bootbox)
+* To apply puppet changes to a running bootbox, use `vagrant provision'
 * Network booting goes across a virtualbox private network named 'genesis'
 * Password for the bootbox follows normal vagrant scheme and can be ssh'd into via vagrant ssh
 * vagrant sets up sharing of this directory tree under /genesis on the genesis-bootbox
