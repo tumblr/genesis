@@ -39,10 +39,31 @@ and modify settings as desired.
 
 1. Import the testnode.ova virtual machine image into Virtualbox 
 2. Go into the testenv/bootbox folder and run ```vagrant up```
-3. Once the vagrant machine is running, follow the [bootcd build
+3. Once the vagrant machine is running, use it to build the gems for the boot
+   image.
+```
+[vagrant@genesis-bootbox ~]$ cd /genesis/src/
+[vagrant@genesis-bootbox src]$ for gem in framework promptcli retryingfetcher; do cd $gem; gem build "genesis_$gem.gemspec"; cd ..; done
+WARNING:  no rubyforge_project specified
+  Successfully built RubyGem
+  Name: genesis_framework
+  Version: 0.5.2
+  File: genesis_framework-0.5.2.gem
+WARNING:  no rubyforge_project specified
+  Successfully built RubyGem
+  Name: genesis_promptcli
+  Version: 0.2.0
+  File: genesis_promptcli-0.2.0.gem
+WARNING:  no rubyforge_project specified
+  Successfully built RubyGem
+  Name: genesis_retryingfetcher
+  Version: 0.4.0
+  File: genesis_retryingfetcher-0.4.0.gem
+```
+4. Follow the [bootcd build
    instructions](https://github.com/tumblr/genesis/blob/master/bootcd/README.md)
    to build the images.
-4. Start the imported virtual machine and it will network boot from the vagrant box
+5. Start the imported virtual machine and it will network boot from the vagrant box
 
 ## Notes:
 
