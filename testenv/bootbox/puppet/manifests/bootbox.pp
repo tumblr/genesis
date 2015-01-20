@@ -4,8 +4,9 @@ $collins_url     = "https://collins.example.com"                 # FIXME
 $genesis_service = "${genesis_ipaddress}:8000"
 $genesis_user    = ''
 $genesis_passw   = ''
-# use internal nameservers so we can resolve internal names
-$dhcp_dns_servers = '10.0.0.1, 10.0.1.1'                         # FIXME
+# we're using Google and Level 3 resolvers here to get you started since we need
+# to reach rubygems. this should be your internal nameservers.
+$dhcp_dns_servers = '8.8.8.8, 4.4.2.2'                           # FIXME
 $nexusserver     = 'nexus.example.com'                           # FIXME
 $file_service    = "${nexusserver}:8888"
 $gem_service     = "${nexusserver}:8808"
