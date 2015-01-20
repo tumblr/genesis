@@ -120,6 +120,7 @@ echo '>>>> updating fstab'
 cat >> /etc/fstab <<EOL
 tmpfs			/tmp		tmpfs	mode=1777	0 0
 tmpfs			/var/tmp	tmpfs	mode=1777	0 0
+tmpfs			/var/cache/yum	tmpfs	mode=1777	0 0
 EOL
 
 
@@ -176,24 +177,6 @@ EOL
 ##rm -f /etc/sysconfig/selinux
 ##ln -s ../selinux/config /etc/sysconfig/selinux
 
-##echo '>>>> environment'
-##grep root /etc/passwd
-##echo "PATH is '$PATH'"
-##ls -ld /usr/bin/gcc /usr/bin/ruby /usr/bin/gem
-##ruby --version
-##echo '>>>> gem env'
-##echo '  packageversion'; gem env packageversion
-##echo '  gempath'; gem env gemdir
-##echo '  gempath'; gem env gempath
-##echo '  version'; gem env version
-##echo '  remotesources'; gem env remotesources
-##echo '  platform'; gem env platform
-##gem env
-##echo '>>>> printenv'
-##printenv
-##echo '>>>> set'
-##set
-
 
 # ruby now installed above
 # build latest stable ruby
@@ -249,14 +232,16 @@ echo '>>>> loading basic genesis framework gems'
 su - -c 'gem install /root/repo/gems/genesis_promptcli.gem'
 su - -c 'gem install /root/repo/gems/genesis_retryingfetcher.gem'
 
-#echo '>>>> cleanup now unneeds gem repo to make image smaller'
-#rm -rf /root/repo
+echo '>>>> cleanup now unneeds gem repo to make image smaller'
+rm -rf /root/repo
+bundle clean
 
 #echo '>>>> cleanup now unneeds RPMs to make image smaller'
 # yum erase -y readline libyaml  ncurses gdbm make
 # yum erase -y libcurl-devel autoconf automake libidn-devel
 # yum erase -y glibc-devel glibc-headers kernel-headers gcc cloog-ppl cpp libgomp mpfr ppl
 #yum erase -y readline libyaml libyaml-devel readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make libffi-devel
+yum clean all
 
 # delete stuff we don't need
 echo ">>>>> Removing bloat from /usr/share"
