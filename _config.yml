@@ -14,7 +14,7 @@ host: 127.0.0.1
 github_username:  tumblr
 
 # Build settings
-##markdown: kramdown
+markdown: kramdown
 exclude:
   - '.gitignore'
   - Gemfile
