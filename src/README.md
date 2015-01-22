@@ -17,9 +17,9 @@ Note: The testenv and bootcd will find the gems here so leave a copy. The bootcd
 
 ## Testing changes:
 
-In your testenv or an already booted genesis image:
-1. scp source-host:<gem>-<version>.gem
-2. gem install ./<gem>-<version>.gem
-3. use irb or genesis command to execercize
+In your testenv or an already booted genesis image:  
+1. scp source-host:<gem>-<version>.gem  
+2. gem install ./<gem>-<version>.gem  
+3. use irb or genesis command to exercize  
 
 Caveat:  The genesis-bootloader will install the versions of these gems as specified in your configuration file.
