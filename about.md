@@ -35,6 +35,5 @@ involved contributions from many folks.
 [AJ](http://aj-jester.tumblr.com/)  
 [Will Richard](https://github.com/Primer42)  
 Gennaro Torre  
-Bhaskar Maddala  
 
 and others from the SRE Systems group at [Tumblr](https://www.tumblr.com/about).
