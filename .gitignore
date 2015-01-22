@@ -1,2 +1,13 @@
 .DS_Store
 *.swp
+
+# gh_pages branch related
+_site
+.sass-cache
+vendor
+.bundle
+Gemfile.lock
+
+# emacs
+*~
+\#*\#
