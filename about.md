@@ -33,7 +33,9 @@ Genesis is developed by the Site Reliability Engineering and Data Center teams a
 [Gabe Conradi](http://tumblr.pipefail.com/)  
 [AJ](http://aj-jester.tumblr.com/)  
 [Will Richard](https://github.com/Primer42)  
+[Mike Leone](https://github.com/Mleone896)  
 Gennaro Torre  
+Dewen Kong  
 [LaQuan McCoy](http://lqmccoy.tumblr.com/)  
 [Tanya Lett](http://tlett67.tumblr.com/)  
 [Wilbur Longwisch](https://github.com/wilpig)  
