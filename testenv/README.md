@@ -15,6 +15,8 @@ The target host uses netbooting via a downloaded iPXE image to more
 accurately reflect the typical production boot ROMs which only support
 PXE.
 
+You can use the test environment to build the genesis image.
+
 ## Requirements:
 
 * [VirtualBox](https://www.virtualbox.org/wiki/Download_Old_Builds_4_3) (version 4.3.10 because of the included .ova file)
