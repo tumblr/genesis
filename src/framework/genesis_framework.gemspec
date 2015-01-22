@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.email = 'opensourcesoftware@tumblr.com'
 
   gem.date = '2014-12-29'
-  gem.version = '0.5.2'
+  gem.version = '0.5.3'
   gem.add_dependency('genesis_promptcli', '~> 0.2', '>= 0.2.0')
   gem.add_dependency('genesis_retryingfetcher', '~> 0.4', '>= 0.4.0')
   gem.add_dependency('collins_client', '~> 0.2', '>= 0.2.0')
