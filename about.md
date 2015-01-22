@@ -25,8 +25,7 @@ get [involved!](https://github.com/tumblr/genesis/blob/master/CONTRIBUTING.md)
 
 ### Credits
 
-Genesis is developed by the Site Reliability Engineering team at Tumblr and
-involved contributions from many folks.
+Genesis is developed by the Site Reliability Engineering and Data Center teams at Tumblr with contributions from many folks.
 
 [Roy Marantz](https://github.com/roymarantz)  
 [Jeremy Johnstone](https://github.com/jsjohnst)  
@@ -35,5 +34,10 @@ involved contributions from many folks.
 [AJ](http://aj-jester.tumblr.com/)  
 [Will Richard](https://github.com/Primer42)  
 Gennaro Torre  
+[LaQuan McCoy](http://lqmccoy.tumblr.com/)  
+[Tanya Lett](http://tlett67.tumblr.com/)  
+[Wilbur Longwisch](https://github.com/wilpig)  
+[Floyd Gathright](http://freckerz.tumblr.com)  
+Dan O'Hanlon  
 
 and others from the SRE Systems group at [Tumblr](https://www.tumblr.com/about).
