@@ -17,7 +17,7 @@ We welcome feedback and contributions via GitHub as described in the
 [README](https://github.com/tumblr/genesis/blob/master/README.md) file
 which also specifies the license.
 
-We need your help!. Genesus is still in the early stages of development
+We need your help!. Genesis is still in the early stages of development
 and while we've met many of the goals we set out to achieve, there's still
 much to be done. If you find a bug or have a cool idea, let us know and
 get [involved!](https://github.com/tumblr/genesis/blob/master/CONTRIBUTING.md)
@@ -25,16 +25,16 @@ get [involved!](https://github.com/tumblr/genesis/blob/master/CONTRIBUTING.md)
 
 ### Credits
 
-Genesis was developed by the Site-Reliability Engineering team at Tumblr and
+Genesis is developed by the Site Reliability Engineering team at Tumblr and
 involved contributions from many folks.
 
 [Roy Marantz](https://github.com/roymarantz)  
 [Jeremy Johnstone](https://github.com/jsjohnst)  
 [Felix Aronsson](https://github.com/defect)  
-[Gabe Conradi](https://github.com/byxorna)  
-AJ  
-Will Richards  
+[Gabe Conradi](http://tumblr.pipefail.com/)  
+[AJ](http://aj-jester.tumblr.com/)  
+[Will Richard](https://github.com/Primer42)  
 Gennaro Torre  
 Bhaskar Maddala  
 
-and others from the SRE-Systems group at [Tumblr](https://www.tumblr.com/about).
+and others from the SRE Systems group at [Tumblr](https://www.tumblr.com/about).
