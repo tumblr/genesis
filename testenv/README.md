@@ -6,7 +6,6 @@ the production setup. It uses two or three virtual machines:
 
 * a bootbox used to support netbooting
 * a target host which runs genesis
-* and optional snooper host to watch the network and help with debugginfg the bootbox
 
 The bootbox and snooper are managed by Vagrant for ease of
 provisioning while target host is naked machine based on a Virtualbox
