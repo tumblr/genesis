@@ -19,6 +19,10 @@ which is suitable for building the linux image.
 
 ## Framework
 
+[![framework](https://badge.fury.io/rb/genesis_framework.svg)](http://badge.fury.io/rb/genesis_framework) [genesis_framework](https://rubygems.org/gems/genesis_framework)
+[![retryingfetcher](https://badge.fury.io/rb/genesis_retryingfetcher.svg)](http://badge.fury.io/rb/genesis_retryingfetcher) [genesis_retryingfetcher](https://rubygems.org/gems/genesis_retryingfetcher)
+[![promptcli](https://badge.fury.io/rb/genesis_promptcli.svg)](http://badge.fury.io/rb/genesis_promptcli) [genesis_promptcli](https://rubygems.org/gems/genesis_promptcli)
+
 The [Genesis framework](https://github.com/tumblr/genesis/tree/master/src/framework) and
 supporting gem can be found in [src](https://github.com/tumblr/genesis/tree/master/src)
 
