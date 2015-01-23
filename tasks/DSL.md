@@ -67,7 +67,7 @@ Example:
 * `install provider, *what`
 
 Uses either the **yum** provider or the **gem** provider to (possibly) install
-software.
+software.  Installing a **gem** also does a `require` of it in the Ruby task class.
 
 Example:
 [TimedBurnin.rb](https://github.com/tumblr/genesis/blob/master/tasks/TimedBurnin.rb#L13)

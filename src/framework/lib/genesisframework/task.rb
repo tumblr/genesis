@@ -112,13 +112,25 @@ module Genesis
               raise 'yum install exited with status: ' + $?.exitstatus.to_s
             end
           elsif provider == :gem
-            # we give a decent try at detecting if the gem is installed before trying to reinstall again
-            # if it contains a - (aka you are specifying a specific version or a / (aka you are specifying a path to find it)
-            # then we punt on trying to determine if the gem is already installed and just pass it to install anyway
-            gems = what.select { |item| item.include?("-") || item.include?("/") || Gem::Dependency.new(item).matching_specs.count == 0 }
-            Kernel.system("gem", "install", "--no-ri", "--no-rdoc", *gems)
-            if $?.exitstatus != 0
-              raise 'gem install exited with status: ' + $?.exitstatus.to_s
+            # We give a decent try at detecting if the gem is
+            # installed before trying to reinstall again.
+            # If it contains a - (aka you are specifying a specific version
+            # or a / (aka you are specifying a path to find it) then
+            # we punt on trying to determine if the gem is already
+            # installed and just pass it to install anyway.
+            gems = what.select do |item|
+              item.include?("-") \
+                || item.include?("/") \
+                || Gem::Dependency.new(item).matching_specs.count == 0
+            end
+            if gems.size > 0    # make sure we still have something to do
+              Kernel.system('gem', 'install', '--no-ri', '--no-rdoc', *gems)
+              if $?.exitstatus != 0
+                raise "gem install #{gems.join(' ')} exited with status: " \
+                  + $?.exitstatus.to_s
+              end
+            else                # be noisy that we aren't doing anything
+              puts "already installed gems: #{what.join(' ')}"
             end
 
             # now need to clear out the Gem cache so we can load it
@@ -127,7 +139,7 @@ module Genesis
             # Now we require all the gems you asked to be installed
             what.all? { |gem| require gem }
           else
-            raise "Unknown install provider: " + provider.to_s
+            raise 'Unknown install provider: ' + provider.to_s
           end
         end
 
