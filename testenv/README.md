@@ -19,7 +19,7 @@ You can use the test environment to build the genesis image.
 
 ## Requirements:
 
-* [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+* [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (We currently develop with version 4.3.20 and have tested with prior versions up to 4.3.10)
 * [Vagrant](https://www.vagrantup.com/downloads.html)
 * Network access to fileserver (or having the Vagrant basebox previously installed)
 
