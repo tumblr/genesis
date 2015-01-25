@@ -13,6 +13,7 @@ $gem_service     = "${nexusserver}:8808"
 $image_service   = "${file_service}"
 $ntp_server      = "ntp.example.com"                             # FIXME
 $rpm_server      = 'repo.example.com'                            # FIXME
+$rpm_base_url    = "http://${rpm_server}/mrepo/RPMS.epel"        # FIXME
 
 # where static test configuration files are kept
 $testenv         = 'testenv'
@@ -29,7 +30,7 @@ $ipxe_kernel_flags = 'rootflags=loop root=live:/genesis.iso rootfstype=auto ro l
 
 node default {
     include yumrepo
-    include tftp::server 
+    include tftp::server
     include dhcp::server
     include bind::server
     include ipxe

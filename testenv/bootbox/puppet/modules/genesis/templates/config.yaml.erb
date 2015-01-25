@@ -1,9 +1,9 @@
 ---
 :ipxe:
     :images:
-        :initrd: /ipxe-images/genesis-initrd.img
-        :kernel: /ipxe-images/genesis-vmlinuz
-    :kernel_flags: rootflags=loop root=live:/genesis.iso rootfstype=auto ro liveimg vga=791 rd_NO_LUKS rd_NO_MD rd_NO_DM console=tty0 console=ttyS1,115200
+        :initrd: <%= @ipxe_initrd %>
+        :kernel: <%= @ipxe_kernel %>
+    :kernel_flags: <%= @ipxe_kernel_flags %>
     :menu_default: intake
     :image_server: http://<%= @image_service %>/genesis
 :genesis_server: http://<%= @genesis_service %>
@@ -13,12 +13,10 @@
         :label:   "[epel]"
         :name:    "epel"
         :descr:   "Epel"
-        :baseurl: "<%= @rpm_base_url %>/RPMS.epel"
+        :baseurl: "<%= @rpm_base_url %>"
         :enabled:   1
         :priority:  1
         :gpgcheck:  0
-#:gems:
-#    "genesis_framework": --source http://<%= @gem_service %> --no-rdoc --no-ri
 :gem_files:
     "genesis_framework": http://<%= @genesis_ipaddress %>:8888/gem/genesis_framework
 :collins:

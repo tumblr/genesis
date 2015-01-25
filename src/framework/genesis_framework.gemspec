@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name = "genesis_framework"
-  gem.homepage = 'https://github.ewr01.tumblr.net/Tumblr/genesis'
+  gem.homepage = 'https://github.com/Tumblr/genesis'
   gem.license = 'Apache License, 2.0'
   gem.summary = %q{Generic server onboarding framework}
   gem.description = %q{Genesis is a project used to manage provisioning of hardware. This is the framework which runs the specified tasks.}
