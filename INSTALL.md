@@ -84,10 +84,10 @@ Examples to all the configuration files mentioned above can be found in the
 test environment puppet code. Here are a couple of sample files that are good
 to check out.
 
-* [Sample genesis config file](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/config.yaml.erb.sample)
+* [Sample genesis config file](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/config.yaml.erb)
 Fetched by Genesis OS to configure various URLs and other settings
 * [Sample menu.ipxe](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/menu.ipxe.erb)
 Used by iPXE to present a menu to the user. Note the GENESIS_MODE and 
 GENESIS_CONF_URL kernel parameters.
-* [Sample stage2 script](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/stage2.erb.sample)
+* [Sample stage2 script](https://github.com/tumblr/genesis/blob/master/testenv/bootbox/puppet/modules/genesis/templates/stage2.erb)
 
