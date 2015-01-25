@@ -62,7 +62,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
         filename "<url to ipxe menu config>";
     } else {
         filename "undionly.kpxe";
-	next-server <file server ip>;
+        next-server <file server ip>;
     }
 }
 ```
