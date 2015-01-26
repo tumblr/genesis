@@ -13,5 +13,5 @@ Gemfile.lock
 \#*\#
 
 # built rpms
-bootcd/rpms/genesis_scripts-0.5-3.el6.noarch.rpm
-bootcd/rpms/genesis_scripts/genesis_scripts-0.5-3.el6.src.rpm
+**/genesis_scripts-*.noarch.rpm
+**/genesis_scripts-*.src.rpm
