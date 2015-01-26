@@ -34,11 +34,20 @@ You can customize these in
 3. bootbox/puppet/modules/genesis/templates/config.yaml.erb
 4. bootbox/puppet/modules/genesis/templates/stage2.erb.
 
-and modify settings as desired.
+and modify settings as desired. While the current values of the options
+allow you to proceed in the test environment without updates by executing
+```vagrant up```, you MUST provide production settings for
+
+* a DHCP server,
+* a TFTP server,
+* and a file server (serving static files over HTTP)
+* RPM repository that includes RPMs required by Genesis tasks
+
+in ```bootbox/puppet/manifests/bootbox.pp```
 
 ## Setup:
 
-1. Import the testnode.ova virtual machine image into Virtualbox 
+1. Import the testnode.ova virtual machine image into Virtualbox
 2. Go into the testenv/bootbox folder and run ```vagrant up```
 3. Once the vagrant machine is running, use it to build the gems for the boot
    image. See also
@@ -120,7 +129,7 @@ The following details have a line of descriptive text, details on what the bootb
 
 * How to test or develop
 
-Following is basic information about testing or developing the different parts of genesis and the test environment. When I say "boot the target" you can do that or use the snooper host to manually run genesis-bootstrap instead.
+Following is basic information about testing or developing the different parts of genesis and the test environment.
 
 * Updating a Gem
  - Modify source

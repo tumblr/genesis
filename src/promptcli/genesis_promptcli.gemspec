@@ -3,7 +3,7 @@
 Gem::Specification.new do |gem|
   gem.name = "genesis_promptcli"
   gem.email = 'jeremy@tumblr.com'
-  gem.homepage = 'https://github.ewr01.tumblr.net/Tumblr/genesis'
+  gem.homepage = 'https://github.com/Tumblr/genesis'
   gem.license = "MIT"
   gem.summary = %Q{Genesis CLI prompt}
   gem.description = %Q{Genesis is a replacement project for InvisibleTouch that is used to manage provisioning of hardware. The promptcli is what asks if you want to perform something and has a timeout going with a default value if nothing selected in specified time period.}

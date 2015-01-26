@@ -11,3 +11,7 @@ Gemfile.lock
 # emacs
 *~
 \#*\#
+
+# built rpms
+**/genesis_scripts-*.noarch.rpm
+**/genesis_scripts-*.src.rpm
