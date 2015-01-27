@@ -35,6 +35,8 @@ end
 
 puts "\nEnsuring temp directory for downloads exists"
 Dir.mkdir("tmp", 0755) unless File.directory? "tmp"
+Dir.mkdir("/root/repo", 0755) unless File.directory? "/root/repo"
+Dir.mkdir("/root/repo/gems", 0755) unless File.directory? "/root/repo/gems"
 
 puts ''
 # protect against funny configs
