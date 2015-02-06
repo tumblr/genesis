@@ -2,7 +2,6 @@ bootloader --location=mbr --append="toram"
 lang en_US.UTF-8
 keyboard us
 timezone America/New_York
-part / --fstype=ext4 --size=4096
 auth --useshadow --enablemd5
 selinux --disabled
 firewall --disabled
