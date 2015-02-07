@@ -45,3 +45,19 @@ data.
 
 ## Deploying the boot image:
  - Copy the files from the output to where PXEBoot is expecting it, this is typically your file server.
+
+## Tmpfs Root for Production
+
+If you have tasks that tend to pull down lots of files to "disk", you may run into the issue where the overlay filesystem overtop of the squashfs root becomes filled. To avoid this, the bootcd ships with a patched ```/usr/share/dracut/modules.d/90dmsquash-live/dmsquash-live-root``` that supports the ```toram``` kernel parameter. If you pass ```toram``` to the kernel in your ipxe config, dracut will copy your squashfs root over to a tmpfs volume and mount that as the root filesystem. You can see the patch we apply [here](dracut.toram.patch) and the fully patched file [here](dmsquash-live-root.toram.sh).
+
+More info here: http://www.espenbraastad.no/post/el6-rootfs-on-tmpfs/?p=160
+
+Sample ipxe config for booting genesis with tmpfs root instead of squashfs+overlay:
+```
+#!ipxe
+.....
+initrd <%= @ipxe_initrd %>
+kernel <%= @ipxe_kernel %> <%= @ipxe_kernel_flags %> toram GENESIS_MODE=${target} GENESIS_CONF_URL=<%= @ipxe_config_url %> <%= @raid_level.nil? ? "" : "GENESIS_RAID_LEVEL=#{raid_level}" %>
+```
+
+Please note, the ```toram``` option will not work in the testenv, as the Genesis ova has only 2g of ram, and the default / partition is 4g. As such, this option is suitable for production environments, but not testing.
