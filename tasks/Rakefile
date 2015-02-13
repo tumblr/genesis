@@ -69,7 +69,10 @@ target_config.each do |target_name, config|
         if dry_run
           puts " not running #{target_name}:#{task_name} in dry-run"
         else
-          Genesis::Framework::Tasks.execute task_name
+          unless Genesis::Framework::Tasks.execute task_name
+            puts 'ERROR: task failed - aborting target'
+            exit(1)
+          end
         end
       end
       # create the dependency chain if there is a next task

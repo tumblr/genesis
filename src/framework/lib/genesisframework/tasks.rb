@@ -16,8 +16,12 @@ module Genesis
         end
       end
 
+      def self.has_block? blocks, sym
+        blocks.has_key?(sym) && blocks[sym].respond_to?(:call)
+      end
+
       def self.call_block blocks, sym, msg = nil
-        if blocks.has_key?(sym) && blocks[sym].respond_to?(:call)
+        if self.has_block? blocks, sym
           puts msg if msg
           blocks[sym].call
         else
@@ -123,7 +127,9 @@ module Genesis
           puts "task is successful!"
         else
           puts 'task failed!!!'
-          success = self.call_block(task.blocks, :rollback, "rolling back!")
+          if self.has_block? task.blocks, :rollback
+            success = self.call_block(task.blocks, :rollback, "rolling back!")
+          end
         end
 
         puts "\n\n"
