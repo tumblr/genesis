@@ -48,10 +48,14 @@ module Genesis
         end
 
         def retries count
-          if count.is_a? Enumerator then
-            set_option :retries, count.to_a
+          # see Genesis::Framework::Tasks.execute for :retries usage
+          # and the reason for this test implementation
+          if count.respond_to? 'each_with_index' then
+            # Array or Enumerable
+            set_option :retries, count
           else
-            set_option :retries, count.times.to_a
+            # Interger
+            set_option :retries, count.times
           end
         end
 
