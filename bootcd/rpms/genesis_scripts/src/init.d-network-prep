@@ -18,9 +18,13 @@ case "$1" in
 	    cat > /etc/sysconfig/network-scripts/ifcfg-$int <<EOF
 DEVICE=$int
 BOOTPROTO=dhcp
-ONBOOT=yes
+ONBOOT=no
 NAME=nic
 EOF
+	    # explicitly bring up only one interface now to prevent
+	    # using lots of dhcp dynamic addresses
+	    # and avoid routing issues with multiple interface on same network
+	    [[ -n network_up ]] && /sbin/dhclient $int && network_up="$int"
 	done
 	;;
     *)  ;;
