@@ -1,5 +1,5 @@
 Name:           genesis_scripts
-Version:        0.5
+Version:        0.6
 Release:        4%{?dist}
 License:        Apache License, 2.0
 URL:            http://tumblr.github.io/genesis

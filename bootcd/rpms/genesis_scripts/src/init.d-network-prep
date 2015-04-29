@@ -24,7 +24,7 @@ EOF
 	    # explicitly bring up only one interface now to prevent
 	    # using lots of dhcp dynamic addresses
 	    # and avoid routing issues with multiple interface on same network
-	    [[ -n network_up ]] && /sbin/ifup $int && network_up="$int"
+	    [[ -n network_up ]] && ip link set dev $int up && network_up="$int"
 	done
 	;;
     *)  ;;
