@@ -13,7 +13,7 @@
 
 case "$1" in
     start)
-	for int in `ip link | grep -v lo0 | awk '/ qlen / {print $2}' | sed 's/://g'`
+	for int in `ip link | grep -v lo | awk '/ qlen / {print $2}' | sed 's/://g'`
 	do
 	    cat > /etc/sysconfig/network-scripts/ifcfg-$int <<EOF
 DEVICE=$int
