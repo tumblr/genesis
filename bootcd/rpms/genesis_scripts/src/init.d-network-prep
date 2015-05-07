@@ -13,7 +13,7 @@
 
 case "$1" in
     start)
-	for int in `ip link | grep -v lo0 | awk '/ qlen / {print $2}' | sed 's/://g'`
+	for int in `ip link | grep -v lo | awk '/ qlen / {print $2}' | sed 's/://g'`
 	do
 	    cat > /etc/sysconfig/network-scripts/ifcfg-$int <<EOF
 DEVICE=$int
@@ -24,7 +24,7 @@ EOF
 	    # explicitly bring up only one interface now to prevent
 	    # using lots of dhcp dynamic addresses
 	    # and avoid routing issues with multiple interface on same network
-	    [[ -n network_up ]] && /sbin/dhclient $int && network_up="$int"
+	    [[ -z "$network_up" ]] && /sbin/dhclient -1 -d -timeout 15 $int && network_up="$int"
 	done
 	;;
     *)  ;;
