@@ -1,7 +1,7 @@
 # Genesis
 
 ## Introduction and motivation
-Genesis is a tool for data center automation. The primary motiviation for
+Genesis is a tool for data center automation. The primary motivation for
 developing Genesis at Tumblr was to streamline the process of discovering new
 machines and reporting their hardware details to 
 [Collins](https://github.com/tumblr/collins), our inventory management system,
@@ -61,7 +61,7 @@ Genesis OS has loaded, the genesis-bootloader fetches and executes a ruby script
 describing a second stage where we install gems, a few base RPMs, and fetch our
 tasks from a remote server. Finally, we execute the relevant tasks.
 
-For a real world example; Consider a brand new server that boots up. It makes a
+For a real world example; consider a brand new server that boots up. It makes a
 DHCP request and loads the iPXE menu. In this case, we know that we haven't seen
 this MAC address before, so it must be a new machine. We boot Genesis in to
 discovery mode, where the tasks it runs are written to fetch all the hardware
@@ -73,7 +73,7 @@ connected to. We then follow this up with 48 hours of hardware stress-test using
 the TimedBurnin task.
 
 ## Test environment
-To avoid testing Genesis in production, we've set up a virtual  test environment
+To avoid testing Genesis in production, we've set up a virtual test environment
 based on VirtualBox. This allows for end-to-end testing of changes to the
 framework, new tasks, etc.
 
