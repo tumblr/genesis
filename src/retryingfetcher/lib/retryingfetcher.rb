@@ -16,7 +16,7 @@ module Genesis
           yield response.body if block_given?
           return response.body
         rescue  => e
-          puts "RetyingFetcher.get error: %s" % e.message
+          puts "RetryingFetcher.get error: %s" % e.message
         end
       end
       nil
