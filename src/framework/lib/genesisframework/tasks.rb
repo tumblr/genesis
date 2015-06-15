@@ -52,7 +52,10 @@ module Genesis
       def self.execute task_name
         puts "\n#{task_name}\n================================================="
 
-        return true unless Genesis::PromptCLI.ask("Would you like to run this task?", 10, true) == true
+        if $stdin.isatty
+          # only prompt if there is a person on stdin
+          return true unless Genesis::PromptCLI.ask("Would you like to run this task?", 10, true)
+        end
 
         task = Genesis::Framework::Tasks.const_get(task_name)
 
@@ -139,4 +142,3 @@ module Genesis
     end
   end
 end
-
