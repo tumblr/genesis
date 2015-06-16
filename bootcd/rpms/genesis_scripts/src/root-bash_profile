@@ -4,5 +4,6 @@ GENESIS_MODE="$(grep -o -e 'GENESIS_MODE=[^ ]*' /proc/cmdline | cut -c14-)"
 if [[ ! -z $GENESIS_MODE ]] && [ ! -e "/var/run/bootloader-autorun.lock" ]
   then
     touch /var/run/bootloader-autorun.lock
-    /usr/bin/genesis-bootloader | tee /var/log/genesis-bootloader.log
+    # disable task execution prompting when doing initial target run
+    GENESIS_PROMPT_TIMEOUT=0  /usr/bin/genesis-bootloader | tee /var/log/genesis-bootloader.log
 fi
