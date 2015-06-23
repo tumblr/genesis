@@ -32,8 +32,8 @@ filesystem
 glibc
 initscripts
 iproute
-iptables-ipv6
-iptables
+-iptables-ipv6
+-iptables
 iputils
 kernel
 ncurses
@@ -131,6 +131,9 @@ ls /lib/modules | while read kernel; do
   /sbin/dracut -f "/boot/initramfs-${kernel}.img" "$kernel"
 done
 
+# iptables packages are pulled in no matter what %packages says
+echo '>>>> disabling iptables and ip5tables service'
+rm -f /etc/rc*.d/*ip{,6}tables
 
 echo '>>>> updating fstab'
 cat > /etc/fstab <<_EOF_
