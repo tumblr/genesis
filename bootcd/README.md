@@ -1,6 +1,6 @@
 # Boot image
 This directory contains sources for building the image that is booted to run genesis
-tasks. You can use the [test environment]() to build the genesis image, or use a SL6 
+tasks. You can use the [test environment](https://github.com/tumblr/genesis/blob/master/testenv/README.md) to build the genesis image, or use a SL6
 installation. The instructions below assume you are using the test environment.
 
 ## Pre-requisites:
@@ -14,9 +14,9 @@ Pre-requisites are installed when using the test environment and include
 
 The Genesis scripts rpm includes scripts and configuration files used by Genesis in the bootcd image
 
- - Bring up the testenv and ssh into the bootbox (vagrant ssh)
+ - Bring up the testenv and ssh into the bootbox (vagrant ssh) or ensure all of the [pre requisites](#pre-requisites) are installed correctly
  - Build the RPMs using rpmbuild and mock:
- 
+
 ```cd /genesis/bootcd/rpms/genesis_scripts```
 
  - Build the source rpm
@@ -30,7 +30,7 @@ The Genesis scripts rpm includes scripts and configuration files used by Genesis
 If trying to rebuild gives you a file or directory not found error, clear mock
 data.
 
-```mock --scrub=all```  
+```mock --scrub=all```
 
  - Resulting RPM can be found in /var/lib/mock/epel-6-x86/result
  - Copy the RPM into [bootcd/rpms](https://github.com/tumblr/genesis/tree/master/bootcd/rpms)
@@ -38,10 +38,12 @@ data.
    - The ```create-image.sh``` script will look for the RPM in this location
 
 ## Building the boot image:
- - Create the Genesis boot image
-   - ```cd /genesis/bootcd```
-   - ```sudo ./create-image.sh```
-   - The ```create-image``` script will create the initrd and kernel in ```/genesis/bootcd/output```
+ - Bring up the testenv and ssh into the bootbox (vagrant ssh) or ensure all of the [pre requisites](#pre-requisites) are installed correctly
+ - Build the ``genesis_scripts`` rpm, and copy it to ``/genesis/bootcd/rpms``. [See these docs for instructions.](#building-the-genesis-scripts-rpm)
+ - Build the genesis gems found in `/genesis/src`. Do not move or install them. [See these instructions for how to build the gems.](https://github.com/tumblr/genesis/blob/master/src/README.md)
+ - ```cd /genesis/bootcd```
+ - ```sudo ./create-image.sh```
+ - The ```create-image``` script will create the initrd and kernel in ```/genesis/bootcd/output```
 
 ## Deploying the boot image:
  - Copy the files from the output to where PXEBoot is expecting it, this is typically your file server.
@@ -53,6 +55,7 @@ If you have tasks that tend to pull down lots of files to "disk", you may run in
 More info here: http://www.espenbraastad.no/post/el6-rootfs-on-tmpfs/?p=160
 
 Sample ipxe config for booting genesis with tmpfs root instead of squashfs+overlay:
+
 ```
 #!ipxe
 .....
