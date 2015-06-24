@@ -132,7 +132,7 @@ ls /lib/modules | while read kernel; do
 done
 
 # iptables packages are pulled in no matter what %packages says
-echo '>>>> disabling iptables and ip5tables service'
+echo '>>>> disabling iptables and ip6tables services'
 rm -f /etc/rc*.d/*ip{,6}tables
 
 echo '>>>> updating fstab'
