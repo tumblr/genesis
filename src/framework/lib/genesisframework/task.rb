@@ -124,7 +124,9 @@ module Genesis
                 || Gem::Dependency.new(item).matching_specs.count == 0
             end
             if gems.size > 0    # make sure we still have something to do
-              Kernel.system('gem', 'install', '--no-ri', '--no-rdoc', *gems)
+              options = ['--no-ri', '--no-rdoc', config.fetch(:gems_source, '').split]
+              args = (options << gems).flatten
+              Kernel.system('gem', 'install', *args)
               if $?.exitstatus != 0
                 raise "gem install #{gems.join(' ')} exited with status: " \
                   + $?.exitstatus.to_s
