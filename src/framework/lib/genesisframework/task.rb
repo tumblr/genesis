@@ -138,8 +138,14 @@ module Genesis
             # now need to clear out the Gem cache so we can load it
             Gem.clear_paths
 
-            # Now we require all the gems you asked to be installed
-            what.all? { |gem| require gem }
+            # Attempt to require loaded gems, print a message if we can't.
+            what.all? { |gem|
+              begin
+                require gem
+              rescue LoadError
+                puts "Could not load gem #{gem} automatically, please load it explicitly in the task"
+              end
+            }
           else
             raise 'Unknown install provider: ' + provider.to_s
           end
