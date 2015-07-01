@@ -143,7 +143,7 @@ module Genesis
               begin
                 require gem
               rescue LoadError
-                puts "Could not load gem #{gem} automatically, please load it explicitly in the task"
+                puts "Could not load gem #{gem} automatically. Maybe the gem name differs from its load path? Please load it explicitly in the task"
               end
             }
           else
