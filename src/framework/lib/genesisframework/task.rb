@@ -112,38 +112,53 @@ module Genesis
               raise 'yum install exited with status: ' + $?.exitstatus.to_s
             end
           elsif provider == :gem
+            # convert arguments in "what" to a gem_name => [requires_list] structure
+            gems = {}
+            what.each { |item|
+              if item.is_a?(Hash)
+                gems.merge! item
+              else
+                gems[item] = []
+              end
+            }
+
             # We give a decent try at detecting if the gem is
             # installed before trying to reinstall again.
             # If it contains a - (aka you are specifying a specific version
             # or a / (aka you are specifying a path to find it) then
             # we punt on trying to determine if the gem is already
             # installed and just pass it to install anyway.
-            gems = what.select do |item|
-              item.include?("-") \
-                || item.include?("/") \
-                || Gem::Dependency.new(item).matching_specs.count == 0
+            install_gems = gems.select do |gem, requires|
+              gem.include?("-") \
+                || gem.include?("/") \
+                || Gem::Dependency.new(gem).matching_specs.count == 0
             end
-            if gems.size > 0    # make sure we still have something to do
+
+            if install_gems.size > 0    # make sure we still have something to do
               options = ['--no-ri', '--no-rdoc', config.fetch(:gems_source, '').split]
-              args = (options << gems).flatten
+              args = (options << install_gems.keys).flatten
               Kernel.system('gem', 'install', *args)
               if $?.exitstatus != 0
-                raise "gem install #{gems.join(' ')} exited with status: " \
+                raise "gem install #{args.join(' ')} exited with status: " \
                   + $?.exitstatus.to_s
               end
             else                # be noisy that we aren't doing anything
-              puts "already installed gems: #{what.join(' ')}"
+              puts "already installed gems: #{gems.keys.join(' ')}"
             end
 
             # now need to clear out the Gem cache so we can load it
             Gem.clear_paths
 
             # Attempt to require loaded gems, print a message if we can't.
-            what.all? { |gem|
+            gems.each { |gem, requires|
               begin
-                require gem
+                if requires.empty?
+                  require gem
+                else
+                  requires.each {|r| require r }
+                end
               rescue LoadError
-                puts "Could not load gem #{gem} automatically. Maybe the gem name differs from its load path? Please load it explicitly in the task"
+                puts "Could not load gem #{gem} automatically. Maybe the gem name differs from its load path? Please specify the name to require, or load it explicitly in the task."
               end
             }
           else
