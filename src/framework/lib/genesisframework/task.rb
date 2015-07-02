@@ -118,7 +118,7 @@ module Genesis
               if item.is_a?(Hash)
                 gems.merge! item
               else
-                gems[item] = []
+                gems[item] = [item]
               end
             }
 
@@ -152,11 +152,7 @@ module Genesis
             # Attempt to require loaded gems, print a message if we can't.
             gems.each { |gem, requires|
               begin
-                if requires.empty?
-                  require gem
-                else
-                  requires.each {|r| require r }
-                end
+                requires.each {|r| require r }
               rescue LoadError
                 puts "Could not load gem #{gem} automatically. Maybe the gem name differs from its load path? Please specify the name to require, or load it explicitly in the task."
               end
