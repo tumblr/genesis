@@ -135,7 +135,7 @@ module Genesis
             end
 
             if install_gems.size > 0    # make sure we still have something to do
-              options = ['--no-ri', '--no-rdoc', config.fetch(:gems_source, '').split]
+              options = config.fetch(:gem_args, '').split
               args = (options << install_gems.keys).flatten
               Kernel.system('gem', 'install', *args)
               if $?.exitstatus != 0
