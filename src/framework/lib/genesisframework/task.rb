@@ -154,7 +154,7 @@ module Genesis
               begin
                 requires.each {|r| require r }
               rescue LoadError
-                puts "Could not load gem #{gem} automatically. Maybe the gem name differs from its load path? Please specify the name to require, or load it explicitly in the task."
+                raise "Could not load gem #{gem} automatically. Maybe the gem name differs from its load path? Please specify the name to require."
               end
             }
           else
