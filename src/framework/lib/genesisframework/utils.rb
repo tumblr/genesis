@@ -1,4 +1,3 @@
-require 'syslog'
 require 'collins_client'
 require 'facter'
 
@@ -45,8 +44,6 @@ module Genesis
       def self.log subsystem, message
         logline = subsystem.to_s + " :: " + message
         puts logline
-        Syslog.open("genesis", Syslog::LOG_PID, Syslog::LOG_USER) unless Syslog.opened?
-        Syslog.log(Syslog::LOG_INFO, logline)
 
         # Load external logging modules and send log to them
         if @@loggers.nil?
