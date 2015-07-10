@@ -14,6 +14,7 @@ module Genesis
       @@config_cache = Hash.new
       @@collins_conn = nil
       @@facter = nil
+      @@loggers = nil
 
       # mimicking rail's cattr_accessor
       def self.config_cache
@@ -46,9 +47,19 @@ module Genesis
         puts logline
         Syslog.open("genesis", Syslog::LOG_PID, Syslog::LOG_USER) unless Syslog.opened?
         Syslog.log(Syslog::LOG_INFO, logline)
-        if self.facter['asset_tag']
-          self.collins.log! self.facter['asset_tag'], message
+
+        # Load external logging modules and send log to them
+        if @@loggers.nil?
+          @@loggers = self.config_cache[:loggers].map {|logger|
+            begin
+              require "logging/#{logger.downcase}"
+              Logging.const_get(logger.to_sym)
+            rescue LoadError
+              puts "Could not load logger #{logger}"
+            end
+          }.compact
         end
+        @@loggers.each {|logger| logger.log logline}
       end
     end
   end
