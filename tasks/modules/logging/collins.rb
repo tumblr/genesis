@@ -10,8 +10,8 @@ module Logging
     end
 
     def self.log message
-      if self.facter['asset_tag']
-        collins.log! 'tumblrtag301', message
+      if facter['asset_tag']
+        collins.log! facter['asset_tag'], message
       end
     end
   end
