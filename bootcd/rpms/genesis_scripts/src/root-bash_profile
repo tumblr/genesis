@@ -5,5 +5,5 @@ if [[ ! -z $GENESIS_MODE ]] && [ ! -e "/var/run/bootloader-autorun.lock" ]
   then
     touch /var/run/bootloader-autorun.lock
     # disable task execution prompting when doing initial target run
-    GENESIS_PROMPT_TIMEOUT=0  /usr/bin/genesis-bootloader | tee /var/log/genesis-bootloader.log
+    GENESIS_PROMPT_TIMEOUT=0  /usr/bin/genesis-bootloader 2>&1 | tee /var/log/genesis-bootloader.log
 fi
