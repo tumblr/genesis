@@ -49,68 +49,25 @@ screen
 setup
 shadow-utils
 sudo
-system-config-firewall-base 
+system-config-firewall-base
 tmux
 traceroute
 util-linux-ng
 vim-minimal
 yum
-
-# packages below here will be removed as part of %post to keep the image smaller
-# unless they are needed for genesis code
-
-# for building ruby
-#byacc
-#db4-devel
-#gcc
-#gdbm
-#gdbm-devel
-#glibc-devel
-#libffi-devel
-#libyaml
-#libyaml-devel
-#make
-#ncurses-devel
-#openssl-devel
-#readline
-#readline-devel
-#tcl-devel
-#unzip
+# needed for rvm
+which
 
 genesis_scripts
 
-# we want to target a more modern ruby environment
-# which we used to build in %post
-ruby
-#rubygems only for old ruby versions
-libyaml
-#rubygem-curb
-#rubygem-genesis_bootloader
-#rubygem-genesis_promptcli
-#rubygem-genesis_retryingfetcher 
-#rubygem-ruby-termios
-#rubygem-nokogiri
-#rubygem-mini_portile
-
-
 # for gem install
 gcc
-#glibc-devel
 glibc-headers
-#kernel-headers
-#curl
-#libcurl
-#libcurl-devel
-#autoconf
-#automake
-#libidn-devel
-#libxml2 
-#libxml2-devel
-#libxslt
-#libxslt-devel
+
 %end
 
 %post
+set -e
 repo_base_url="http://ftp.scientificlinux.org/linux/scientific/6x/x86_64"
 # Apply Genesis Live OS customizations
 echo '*****************************************'
@@ -212,6 +169,16 @@ EOL
 #make
 #make install
 
+# Install RVM
+echo '>>>> setting up rvm'
+# in kickstart post, $PATH isnt set so make sure rvm doesnt freak out
+export PATH=/usr/bin:/bin:$PATH
+\curl -sSL https://get.rvm.io | bash
+echo '>>>> building ruby'
+bash -c "source /etc/profile.d/rvm.sh && rvm install --default 2.2 && rvm cleanup sources"
+bash -c "source /etc/profile.d/rvm.sh && rvm list"
+bash -c "source /etc/profile.d/rvm.sh && ruby --version"
+
 echo '>>>> creating /etc/gemrc'
 cat >> /etc/gemrc <<EOF
 install: --no-ri --no-rdoc
@@ -220,17 +187,7 @@ EOF
 #gem:  --no-document
 
 echo '>>>> installing bundler gem'
-su - -c 'gem install bundler'
-
-echo '>>>> downloading genesis_{promptcli,retryingfetcher}.gem'
-mkdir -p /root/repo/gems
-curl 'http://localhost:8888/gem/genesis_promptcli' > /root/repo/gems/genesis_promptcli.gem
-curl 'http://localhost:8888/gem/genesis_retryingfetcher' > /root/repo/gems/genesis_retryingfetcher.gem
-## TODO support local gems for the Gemfile
-##echo '>>>> makeing a local gem repo of those gems'
-##su - -c 'gem install builder'
-##su - -c 'cd /root/repo; gem generate_index'
-ls -l -r /root/repo
+su - -c 'source /etc/profile.d/rvm.sh && gem install bundler'
 
 echo '>>>> creating /root/Gemfile'
 # gem versions match Gemfiles in src/<GEM>/Gemfile
@@ -238,27 +195,18 @@ cat > /root/Gemfile  <<EOF
 source 'https://rubygems.org'
 
 gem 'ruby-termios', '~> 0.9.4'
-##gem 'genesis_promptcli', :source => 'file:///root/repo'
 gem 'httparty'
-##gem 'genesis_retryingfetcher', :source => 'file:///root/repo'
 gem 'json'
 EOF
-#gem 'genesis_scripts'
-#gem 'genesis_bootloader'
-#gem 'mini_portile'
-#gem 'nokogiri'
 
 echo '>>>> loading gems'
-su - -c 'bundle install --system --gemfile /root/Gemfile'
+su - -c 'source /etc/profile.d/rvm.sh && bundle install --system --gemfile /root/Gemfile'
 
 # TODO get these into the Gemfile
-echo '>>>> loading basic genesis framework gems'
-su - -c 'gem install /root/repo/gems/genesis_promptcli.gem'
-su - -c 'gem install /root/repo/gems/genesis_retryingfetcher.gem'
-
-echo '>>>> cleanup unneeded gem repo to make image smaller'
-rm -rf /root/repo
-bundle clean
+echo '>>>> installing basic genesis framework gems'
+bash -c "source /etc/profile.d/rvm.sh && gem install genesis_retryingfetcher"
+bash -c "source /etc/profile.d/rvm.sh && gem install genesis_promptcli"
+bash -c "source /etc/profile.d/rvm.sh && gem list"
 
 #echo '>>>> cleanup now unneeds RPMs to make image smaller'
 # yum erase -y readline libyaml  ncurses gdbm make

@@ -50,6 +50,10 @@ pid=$!
 
 echo '### creating livecd'
 livecd-creator -c genesis.ks -f genesis -t "$tmpdir/live/" --cache="$tmpdir/livecache/" -v
+if [[ $? != 0 ]] ; then
+  echo "Error creating livecd image"
+  exit 1
+fi
 
 echo '### cleanup local rpm repo'
 kill $pid
@@ -57,7 +61,7 @@ unset pid
 rm -rf $REPO
 
 echo '### cleanup unused directories'
-rm -rf base dell epel it local ruby193 tftpboot updates fastbugs security
+rm -rf base epel local tftpboot updates fastbugs security
 
 echo '### create genesis.iso'
 livecd-iso-to-pxeboot genesis.iso

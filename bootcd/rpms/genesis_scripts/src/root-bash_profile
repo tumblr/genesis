@@ -1,6 +1,11 @@
 
 GENESIS_MODE="$(grep -o -e 'GENESIS_MODE=[^ ]*' /proc/cmdline | cut -c14-)"
 
+# setup the ruby environment we need
+source /etc/profile.d/rvm.sh
+rvm list
+ruby --version
+
 if [[ ! -z $GENESIS_MODE ]] && [ ! -e "/var/run/bootloader-autorun.lock" ]
   then
     touch /var/run/bootloader-autorun.lock
