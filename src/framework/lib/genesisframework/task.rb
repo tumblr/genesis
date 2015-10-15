@@ -96,8 +96,7 @@ module Genesis
         end
 
         def log message
-          task = self.ancestors.first.to_s.split('::').last
-          Genesis::Framework::Utils.log(task, message)
+          Genesis::Framework::Utils.log(task_name, message)
         end
 
         def prompt message, seconds=15, default=false
@@ -167,8 +166,11 @@ module Genesis
         end
 
         def tmp_path filename
-          task = self.ancestors.first.to_s.split('::').last
-          Genesis::Framework::Utils.tmp_path(filename, task)
+          Genesis::Framework::Utils.tmp_path(filename, task_name)
+        end
+
+        def task_name
+          self.ancestors.first.to_s.split('::').last
         end
 
         #############################################################
