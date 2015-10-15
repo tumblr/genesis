@@ -98,7 +98,8 @@ module Genesis
         end
 
         def log message
-          Genesis::Framework::Utils.log(self.class.name, message)
+          task = self.ancestors.first.to_s.split('::').last
+          Genesis::Framework::Utils.log(task, message)
         end
 
         def prompt message, seconds=15, default=false
