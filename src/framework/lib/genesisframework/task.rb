@@ -1,5 +1,3 @@
-require 'collins_client'
-require 'syslog'
 require 'retryingfetcher'
 require 'promptcli'
 require 'facter'
