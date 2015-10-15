@@ -169,7 +169,8 @@ module Genesis
         end
 
         def tmp_path filename
-          Genesis::Framework::Utils.tmp_path(filename, self.class.name)
+          task = self.ancestors.first.to_s.split('::').last
+          Genesis::Framework::Utils.tmp_path(filename, task)
         end
 
         #############################################################
