@@ -1,5 +1,3 @@
-require 'collins_client'
-require 'syslog'
 require 'retryingfetcher'
 require 'promptcli'
 require 'facter'
@@ -98,7 +96,7 @@ module Genesis
         end
 
         def log message
-          Genesis::Framework::Utils.log(self.class.name, message)
+          Genesis::Framework::Utils.log(task_name, message)
         end
 
         def prompt message, seconds=15, default=false
@@ -168,7 +166,11 @@ module Genesis
         end
 
         def tmp_path filename
-          Genesis::Framework::Utils.tmp_path(filename, self.class.name)
+          Genesis::Framework::Utils.tmp_path(filename, task_name)
+        end
+
+        def task_name
+          self.ancestors.first.to_s.split('::').last
         end
 
         #############################################################
