@@ -25,7 +25,7 @@ The Genesis scripts rpm includes scripts and configuration files used by Genesis
 
  - Build the rpm (ensure the src rpm version is correct, when copy-pasting from here, it is likely to be incorrect)
 
-```mock -r epel-6-x86_64 --rebuild genesis_scripts-0.5-4.el6.src.rpm```
+```mock -r epel-6-x86_64 --rebuild genesis_scripts-0.8-1.el6.src.rpm```
 
 If trying to rebuild gives you a file or directory not found error, clear mock
 data.
@@ -34,7 +34,7 @@ data.
 
  - Resulting RPM can be found in /var/lib/mock/epel-6-x86/result
  - Copy the RPM into [bootcd/rpms](https://github.com/tumblr/genesis/tree/master/bootcd/rpms)
-   - ```cp /var/lib/mock/epel-6-x86_64/result/genesis_scripts-0.5-4.el6.noarch.rpm ../```
+   - ```cp /var/lib/mock/epel-6-x86_64/result/genesis_scripts-0.8-1.el6.noarch.rpm ../```
    - The ```create-image.sh``` script will look for the RPM in this location
 
 ## Building the boot image:
