@@ -80,6 +80,26 @@ framework, new tasks, etc.
 More information about the test environment and setting it up can be found in
 [testenv/README.md](https://github.com/tumblr/genesis/blob/master/testenv/README.md).
 
+## Building an Image
+
+To make it easy to get started with genesis, we have included a `Dockerfile` that will allow
+you to compile a bootable live image without needing a lot of client side configuration. If you
+have docker running on your machine and just want to build the latest images:
+
+```
+# mkdir output
+# docker run --privileged=true -v $(pwd)/output:/output tumblr/genesis-builder
+# ls output
+```
+
+To build a custom image, if you have tweaked something about genesis, you can present build a custom builder image:
+
+```
+# docker build -t genesis-builder .
+# docker run --privileged=true -v $(pwd)/output:/output genesis-builder
+# ls output
+```
+
 ## Contact
 Please feel free to open issues on GitHub for any feedback or problems you might
 run in to. We also actively encourage pull requests. Please also make

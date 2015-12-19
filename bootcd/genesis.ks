@@ -108,6 +108,13 @@ _EOF_
 echo '>>>> setting hostname'
 sed -i -e 's/HOSTNAME=.*/HOSTNAME=genesis/' /etc/sysconfig/network
 
+echo '>>>> setting /etc/resolv.conf to point to public resolvers'
+# this is necessary to resolve get.rvm.io and friends in %post
+cat >/etc/resolv.conf <<"__EOF__"
+# you probably want to override this file with your own resolvers
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+__EOF__
 
 echo '>>>> rewriting /etc/motd'
 cat > /etc/motd <<"__EOF__"
@@ -158,16 +165,6 @@ EOL
 ##rm -f /etc/sysconfig/selinux
 ##ln -s ../selinux/config /etc/sysconfig/selinux
 
-
-# ruby now installed above
-# build latest stable ruby
-#mkdir /tmp/ruby
-#cd /tmp/ruby
-#curl -k https://ftp.ruby-lang.org/pub/ruby/stable-snapshot.tar.gz | tar -xzf -
-#cd stable-snapshot
-#./configure
-#make
-#make install
 
 # Install RVM
 echo '>>>> setting up rvm'
