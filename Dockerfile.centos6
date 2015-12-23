@@ -10,7 +10,7 @@ RUN curl -o epel.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-6
   rpm -ivh epel.rpm && \
   rm epel.rpm
 
-RUN yum install -y livecd-tools createrepo curl unzip rpm-build && \
+RUN yum install -y livecd-tools createrepo curl rpm-build && \
   yum clean all
 
 
