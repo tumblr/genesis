@@ -79,7 +79,7 @@ module Genesis
             end
           end
         rescue => e
-          puts "%s task had error on testing if it needs initialization: %s" % [task_name, e.message]
+          task.log "task had error on testing if it needs initialization: %s" % e.message
           return false
         end
 
@@ -88,7 +88,7 @@ module Genesis
           self.call_block(task.blocks, :init);
           puts "task is now initialized..."
         rescue => e
-          puts "%s task threw error on initialization: %s" % [task_name, e.message]
+          task.log "task threw error on initialization: %s" % e.message
           return false
         end
 
@@ -104,7 +104,7 @@ module Genesis
             end
           end
         rescue => e
-          puts "%s task had error on testing if it needs running: %s" % [task_name, e.message]
+          task.log "task had error on testing if it needs running: %s" % e.message
           return false
         end
 
@@ -112,27 +112,27 @@ module Genesis
         task.options[:retries].each_with_index do |sleep_interval, index|
           attempt = index + 1
           begin
-            puts "task is attempting run #%d..." % [attempt]
+            task.log "task is attempting run #%d..." % [attempt]
             Timeout::timeout(task.options[:timeout]) do
               success = self.call_block(task.blocks, :run)
             end
             # a run block should raise an error or be false for a failure
             success = true if success.nil?
           rescue => e
-             puts "%s task [run #%d] caused error: %s" % [task_name, attempt, e.message]
+             task.log "run #%d caused error: %s" % [attempt, e.message]
              success = nil      # cause a retry
           end
           break unless success.nil? # if we got an answer, we're done
-          puts "task is sleeping for %d seconds..." % [sleep_interval]
+          task.log "task is sleeping for %d seconds..." % [sleep_interval]
           Kernel.sleep(sleep_interval)
         end
         success = false if success.nil? # must have used all the retries, fail
 
         if success
           success = self.call_block(task.blocks, :success)
-          puts "task is successful!"
+          task.log "task is successful!"
         else
-          puts 'task failed!!!'
+          task.log 'task failed!!!'
           if self.has_block? task.blocks, :rollback
             success = self.call_block(task.blocks, :rollback, "rolling back!")
           end
