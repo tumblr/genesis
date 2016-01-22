@@ -95,7 +95,7 @@ have docker running on your machine and just want to build the latest images:
 To build a custom image, if you have tweaked something about genesis, you can present build a custom builder image:
 
 ```
-# docker build -f Dockerfile.centos6 -t genesis-builder .
+# docker build -f Dockerfile -t genesis-builder .
 # docker run --privileged=true -v $(pwd)/output:/output genesis-builder
 # ls output
 ```
