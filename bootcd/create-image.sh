@@ -1,8 +1,9 @@
 #!/bin/bash
 
 REPO=repo
+export OUTPUT_DIR="${OUTPUT_DIR:-/output}"
 
-set -e
+set -ex
 
 if [[ $EUID -ne 0 ]]; then
   echo "This script must be run as root" 
@@ -14,6 +15,10 @@ for cmd in createrepo livecd-creator livecd-iso-to-pxeboot; do
     exit 1
   fi
 done
+if [[ ! -d $OUTPUT_DIR ]] ; then
+  echo "OUTPUT_DIR must be a directory"
+  exit 1
+fi
 
 cleanup() {
     [[ -n "$pid" ]] && kill $pid
@@ -66,12 +71,11 @@ rm -rf base epel local tftpboot updates fastbugs security
 echo '### create genesis.iso'
 livecd-iso-to-pxeboot genesis.iso
 
-mkdir -p output
-mv tftpboot/initrd0.img output/genesis-initrd.img
-mv tftpboot/vmlinuz0 output/genesis-vmlinuz
-chmod 644 output/genesis-vmlinuz
-mv genesis.iso output/
+mv tftpboot/initrd0.img $OUTPUT_DIR/genesis-initrd.img
+mv tftpboot/vmlinuz0 $OUTPUT_DIR/genesis-vmlinuz
+chmod 644 $OUTPUT_DIR/genesis-vmlinuz
+mv genesis.iso $OUTPUT_DIR/
 rm -rf tftpboot
 
-printf "### $0 completed successfully results in ./output/"
-ls -l output
+printf "### $0 completed successfully results in $OUTPUT_DIR"
+ls -l $OUTPUT_DIR

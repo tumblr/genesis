@@ -3,19 +3,35 @@ This directory contains sources for building the image that is booted to run gen
 tasks. You can use the [test environment](https://github.com/tumblr/genesis/blob/master/testenv/README.md) to build the genesis image, or use a SL6
 installation. The instructions below assume you are using the test environment.
 
-## Pre-requisites:
+## The easy (docker) way:
+
+You probably just want to build a genesis live image with no hassle. Just get docker running on your host, and run:
+
+```
+$ docker run -v /tmp:/output tumblr/genesis-builder
+$ ls /tmp
+genesis.iso
+genesis-initrd.img
+genesis-vmlinuz
+```
+
+Now, you just need to copy the bootable `vmlinuz` and `initrd` somewhere where your PXE/iPXE server can fetch them over HTTP.
+
+## The super hard way:
+
+### Pre-requisites:
 
 Pre-requisites are installed when using the test environment and include
 
 - livecd-tools and createrepo RPMs installed
 - python and SimpleHTTPServer module
 
-## Building the Genesis Scripts RPM:
+### Building the Genesis Scripts RPM:
 
 The Genesis scripts rpm includes scripts and configuration files used by Genesis in the bootcd image
 
  - Bring up the testenv and ssh into the bootbox (vagrant ssh) or ensure all of the [pre requisites](#pre-requisites) are installed correctly
- - Build the RPMs using rpmbuild and mock:
+ - Build the RPMs using rpmbuild:
 
 ```cd /genesis/bootcd/rpms/genesis_scripts```
 
@@ -25,19 +41,14 @@ The Genesis scripts rpm includes scripts and configuration files used by Genesis
 
  - Build the rpm (ensure the src rpm version is correct, when copy-pasting from here, it is likely to be incorrect)
 
-```mock -r epel-6-x86_64 --rebuild genesis_scripts-0.8-1.el6.src.rpm```
+```rpmbuild --rebuild --rebuild genesis_scripts-0.8-1.el6.src.rpm```
 
-If trying to rebuild gives you a file or directory not found error, clear mock
-data.
-
-```mock --scrub=all```
-
- - Resulting RPM can be found in /var/lib/mock/epel-6-x86/result
+ - Resulting RPM can be found in your RPM build path (/root/rpmbuild/RPMS/noarch/ if building as root with no rpmconfig)
  - Copy the RPM into [bootcd/rpms](https://github.com/tumblr/genesis/tree/master/bootcd/rpms)
-   - ```cp /var/lib/mock/epel-6-x86_64/result/genesis_scripts-0.8-1.el6.noarch.rpm ../```
+   - ```cp /root/rpmbuild/RPMS/noarch//genesis_scripts-0.8-1.el6.noarch.rpm ../```
    - The ```create-image.sh``` script will look for the RPM in this location
 
-## Building the boot image:
+### Building the boot image:
  - Bring up the testenv and ssh into the bootbox (vagrant ssh) or ensure all of the [pre requisites](#pre-requisites) are installed correctly
  - Build the ``genesis_scripts`` rpm, and copy it to ``/genesis/bootcd/rpms``. [See these docs for instructions.](#building-the-genesis-scripts-rpm)
  - Build the genesis gems found in `/genesis/src`. Do not move or install them. [See these instructions for how to build the gems.](https://github.com/tumblr/genesis/blob/master/src/README.md)
@@ -45,8 +56,10 @@ data.
  - ```sudo ./create-image.sh```
  - The ```create-image``` script will create the initrd and kernel in ```/genesis/bootcd/output```
 
-## Deploying the boot image:
+### Deploying the boot image:
  - Copy the files from the output to where PXEBoot is expecting it, this is typically your file server.
+
+# Notes
 
 ## Tmpfs Root for Production
 
