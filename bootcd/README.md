@@ -3,17 +3,23 @@ This directory contains sources for building the image that is booted to run gen
 tasks. You can use the [test environment](https://github.com/tumblr/genesis/blob/master/testenv/README.md) to build the genesis image, or use a SL6
 installation. The instructions below assume you are using the test environment.
 
+## The easiest way:
+
+Get the prebuilt binaries from the github release :-)
+
 ## The easy (docker) way:
 
 You probably just want to build a genesis live image with no hassle. Just get docker running on your host, and run:
 
 ```
-$ docker run -v /tmp:/output tumblr/genesis-builder
-$ ls /tmp
+$ docker run -v $PWD/output:/output tumblr/genesis-builder
+$ ls $PWD/output
 genesis.iso
 genesis-initrd.img
 genesis-vmlinuz
 ```
+
+NOTE: if you get an error about not being able to do a loopback mount add ```--privileged```
 
 Now, you just need to copy the bootable `vmlinuz` and `initrd` somewhere where your PXE/iPXE server can fetch them over HTTP.
 

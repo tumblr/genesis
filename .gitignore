@@ -15,3 +15,5 @@ Gemfile.lock
 # built rpms
 **/genesis_scripts-*.noarch.rpm
 **/genesis_scripts-*.src.rpm
+
+output
