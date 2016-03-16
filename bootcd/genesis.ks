@@ -203,6 +203,7 @@ su - -c 'source /etc/profile.d/rvm.sh && bundle install --system --gemfile /root
 echo '>>>> installing basic genesis framework gems'
 bash -c "source /etc/profile.d/rvm.sh && gem install genesis_retryingfetcher"
 bash -c "source /etc/profile.d/rvm.sh && gem install genesis_promptcli"
+bash -c "source /etc/profile.d/rvm.sh && gem install genesis_framework"
 bash -c "source /etc/profile.d/rvm.sh && gem list"
 
 #echo '>>>> cleanup now unneeds RPMs to make image smaller'
