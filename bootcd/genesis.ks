@@ -21,6 +21,7 @@ attr
 authconfig
 basesystem
 bash
+bind-utils
 chkconfig
 coreutils
 cpio
@@ -37,6 +38,7 @@ iproute
 iputils
 kernel
 ncurses
+ntpdate
 openssh-server
 openssh-clients
 passwd
