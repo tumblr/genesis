@@ -50,6 +50,15 @@ end
 raise "ERROR: #{GENESIS_CONF_URL} did not contain valid yaml or was empty" \
   if (genesis_config.nil? || genesis_config.empty?)
 
+# fix the system clock if possible to keep log entries more accurate
+# and prevent false cert expired verification problems
+ntp_server = genesis_config.fetch('ntp_server', nil)
+if ntp_server and File.executable?('/usr/sbin/ntpdate')
+  puts "Setting the system time from #{ntp_server.inspect}"
+  system('/usr/sbin/ntpdate', '-u', '-b', ntp_server) \
+    or puts "ERROR: failed to set system time ntpdate returned: #{$?.inspect}"
+end
+
 # allow GENESIS_ROOT to be overridden from config
 GENESIS_ROOT = genesis_config.fetch(:root, '/var/run/genesis')
 puts 'Genesis root is: %s' % [GENESIS_ROOT]
@@ -85,7 +94,7 @@ loop do
   break if syntax_valid
 
   puts ''
-  try_fetching = Genesis::PromptCLI.ask "Genesis Stage 2 is corrupt. Would you like to retry?" 
+  try_fetching = Genesis::PromptCLI.ask "Genesis Stage 2 is corrupt. Would you like to retry?"
   unless  try_fetching
     raise RuntimeError, msg + "Genesis Stage 2 is corrupt. Execution halted!"
   end
