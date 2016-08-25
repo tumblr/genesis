@@ -82,9 +82,7 @@ More information about the test environment and setting it up can be found in
 
 ## Building an Image
 
-To make it easy to get started with genesis, we have included a `Dockerfile` that will allow
-you to compile a bootable live image without needing a lot of client side configuration. If you
-have docker running on your machine and just want to build the latest images:
+To make it easy to get started with genesis, we have included a `Dockerfile` that will allow you to compile a bootable live image without needing a lot of client side configuration. If you have docker running on your machine and just want to build the latest images:
 
 ```
 # mkdir output
@@ -99,6 +97,8 @@ To build a custom image, if you have tweaked something about genesis, you can pr
 # docker run --privileged=true -v $(pwd)/output:/output genesis-builder
 # ls output
 ```
+
+> NOTE: the genesis-builder uses livecd-creator which depends on loopback mounts.  These don't currently (2016-08-25) work with Docker for Mac.  On linux you should make sure you have at least 2 spare /dev/loop* devices, `losetup -a` will show which ones are busy and `mknod /dev/loop# -m0600 b 7 #` a couple if needed. Also you may need to cleanup/free (`losetup -d`) devices after this has run.
 
 ## Contact
 Please feel free to open issues on GitHub for any feedback or problems you might
