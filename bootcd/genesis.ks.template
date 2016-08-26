@@ -58,6 +58,7 @@ util-linux-ng
 vim-minimal
 yum
 # needed for rvm
+gpgme
 which
 
 genesis_scripts
@@ -113,9 +114,7 @@ sed -i -e 's/HOSTNAME=.*/HOSTNAME=genesis/' /etc/sysconfig/network
 echo '>>>> setting /etc/resolv.conf to point to public resolvers'
 # this is necessary to resolve get.rvm.io and friends in %post
 cat >/etc/resolv.conf <<"__EOF__"
-# you probably want to override this file with your own resolvers
-nameserver 8.8.8.8
-nameserver 8.8.4.4
+%%LocalNameservers%%
 __EOF__
 
 echo '>>>> rewriting /etc/motd'
@@ -172,11 +171,11 @@ EOL
 echo '>>>> setting up rvm'
 # in kickstart post, $PATH isnt set so make sure rvm doesnt freak out
 export PATH=/usr/bin:/bin:$PATH
-\curl -sSL https://get.rvm.io | bash
 echo '>>>> building ruby'
-bash -c "source /etc/profile.d/rvm.sh && rvm install --default 2.2 && rvm cleanup sources"
-bash -c "source /etc/profile.d/rvm.sh && rvm list"
-bash -c "source /etc/profile.d/rvm.sh && ruby --version"
+bash -c 'gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 && \curl -sSL https://get.rvm.io | bash -s stable'
+bash -c 'source /etc/profile.d/rvm.sh && rvm install --default 2.2 && rvm cleanup sources'
+bash -c 'source /etc/profile.d/rvm.sh && rvm list'
+bash -c 'source /etc/profile.d/rvm.sh && ruby --version'
 
 echo '>>>> creating /etc/gemrc'
 cat >> /etc/gemrc <<EOF
