@@ -28,6 +28,7 @@ cpio
 device-mapper
 device-mapper-event
 dhclient
+dmidecode
 e2fsprogs
 filesystem
 glibc
