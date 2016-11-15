@@ -34,11 +34,15 @@ module Genesis
       end
 
       def self.facter
-        if @@facter.nil?
-          @@facter = Facter.to_hash
-        end
+        if config_cache.fetch(:facter_cache, true)
+          Facter.to_hash
+        else
+          if @@facter.nil?
+            @@facter = Facter.to_hash
+          end
 
-        @@facter
+          @@facter
+        end
       end
 
       def self.log subsystem, message
