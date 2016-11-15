@@ -34,7 +34,7 @@ module Genesis
       end
 
       def self.facter
-        if config_cache[:facter_cache] == false
+        if config_cache.fetch(:facter_cache, true)
           Facter.to_hash
         else
           if @@facter.nil?
