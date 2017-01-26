@@ -35,13 +35,12 @@ module Genesis
 
       def self.facter
         if config_cache.fetch(:facter_cache, true)
-          Facter.to_hash
-        else
           if @@facter.nil?
             @@facter = Facter.to_hash
           end
-
           @@facter
+        else
+          Facter.to_hash
         end
       end
 
