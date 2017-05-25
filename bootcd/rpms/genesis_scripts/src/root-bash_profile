@@ -1,14 +1,37 @@
+# Genesis modifications
 
-GENESIS_MODE="$(grep -o -e 'GENESIS_MODE=[^ ]*' /proc/cmdline | cut -c14-)"
+# Get our configuration
+source /etc/sysconfig/genesis
+# If the config file is broken, use sane defaults
+GENESIS_PIDFILE=${GENESIS_PIDFILE:-/var/run/genesis.pid}
+GENESIS_LOGFILE=${GENESIS_LOGFILE:-/var/log/genesis-bootloader.log}
 
-# setup the ruby environment we need
-source /etc/profile.d/rvm.sh
-rvm list
-ruby --version
+if grep -q GENESIS_AUTOTAIL /proc/cmdline && [[ -z "${SSH_CLIENT}" ]]; then
+	# Try for up to 2.1 seconds to find a pidfile
+	for SLEEPTIME in .{1..6}; do
+		if [[ -f "${GENESIS_PIDFILE}" ]]; then
+			# get the pid and break out of the for loop
+			GENESIS_PID=$(cat "${GENESIS_PIDFILE}")
+			break
+		else
+			sleep "${SLEEPTIME}"
+		fi
+	done
+	if [[ ! -z "${GENESIS_PID}" ]] && [[ -f "${GENESIS_LOGFILE}" ]]; then
+		# tail the log until the process exits
+		tail -n 10000 -f --pid="${GENESIS_PID}" "${GENESIS_LOGFILE}"
+	else
+		echo >&2 "Something went wrong trying to tail the Genesis logfile:"
+		echo >&2 "GENESIS_PIDFILE=${GENESIS_PIDFILE}"
+		echo >&2 "GENESIS_PID=${GENESIS_PID}"
+		echo >&2 "GENESIS_LOGFILE=${GENESIS_LOGFILE}"
+	fi
 
-if [[ ! -z $GENESIS_MODE ]] && [ ! -e "/var/run/bootloader-autorun.lock" ]
-  then
-    touch /var/run/bootloader-autorun.lock
-    # disable task execution prompting when doing initial target run
-    GENESIS_PROMPT_TIMEOUT=0  /usr/bin/genesis-bootloader 2>&1 | tee /var/log/genesis-bootloader.log
+else
+	# automatic log tailing is not enabled
+	echo "Genesis logs should be found in ${GENESIS_LOGFILE}"
+	echo
 fi
+
+# for some reason we find ourselves in /dev
+cd "${HOME}"

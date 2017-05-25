@@ -1,3 +1,0 @@
-#! /bin/bash
-# /root/.bash_profile starts genesis-bootloader
-exec /bin/bash --login

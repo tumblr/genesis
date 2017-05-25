@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if grep -q GENESIS_AUTOTAIL /proc/cmdline; then
+	exec /sbin/mingetty --autologin root "$@"
+else
+	exec /sbin/mingetty "$@"
+fi

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if grep -q GENESIS_AUTOTAIL /proc/cmdline; then
+	exec /sbin/agetty -n -l /usr/bin/autologin "$@"
+else
+	exec /sbin/agetty "$@"
+fi

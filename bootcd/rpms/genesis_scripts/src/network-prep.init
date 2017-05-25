@@ -1,0 +1,32 @@
+#! /bin/bash
+#
+# chkconfig: 2345 09 89
+# descripttion: setup network interfaces for dhclient to configure
+#
+# these should be a better way to do this.  TODO find it!
+
+### BEGIN INIT INFO
+# X-Start-Before:    $network
+# Default-Start:     2 3 4 5
+# Description:       setup network interfaces for dhclient to configure
+### END INIT INFO
+
+case "$1" in
+start)
+	for int in $(ip link | grep -v lo | awk '/ qlen / {print $2}' | sed 's/://g'); do
+		cat >"/etc/sysconfig/network-scripts/ifcfg-$int" <<EOF
+DEVICE=$int
+BOOTPROTO=dhcp
+ONBOOT=no
+NAME=nic
+EOF
+		# explicitly bring up only one interface now to prevent
+		# using lots of dhcp dynamic addresses
+		# and avoid routing issues with multiple interface on same network
+		[[ -z "$network_up" ]] && /sbin/dhclient -1 -timeout 60 "$int" && network_up="$int"
+	done
+	;;
+*) ;;
+esac
+
+exit 0
