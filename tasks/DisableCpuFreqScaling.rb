@@ -1,3 +1,7 @@
+# For background on this read the following two links
+# https://wiki.gentoo.org/wiki/Power_management/Processor
+# https://wiki.archlinux.org/index.php/CPU_frequency_scaling
+
 class DisableCpuFreqScaling
   include Genesis::Framework::Task
 
