@@ -12,8 +12,6 @@ class DisableCpuFreqScaling
       File.open("#{dirname}/cpufreq/scaling_governor", 'w') { |f| f.write('performance') }
     end
 
-    log 'Syncing files to disk and sleep 5'
-
     # Verify CPUs set to max freq 
     Dir.glob(cpu_dirs).each do |dirname|
       max = File.read("#{dirname}/cpufreq/cpuinfo_max_freq").strip
