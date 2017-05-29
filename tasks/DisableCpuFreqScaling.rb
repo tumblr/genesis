@@ -9,7 +9,7 @@ class DisableCpuFreqScaling
   run do
     cpu_dirs = '/sys/devices/system/cpu/cpu[0-9]*'
     Dir.glob(cpu_dirs).each do |dirname|
-      File.open("#{dirname}/cpufreq/scaling_governor", 'w') { |f| f.write('performance') }
+      File.write("#{dirname}/cpufreq/scaling_governor", 'performance')
     end
 
     # Verify CPUs set to max freq 
@@ -19,6 +19,5 @@ class DisableCpuFreqScaling
       raise "Max CPU frequency did not take" unless max == cur
     end
   end
-
 end
 
