@@ -44,9 +44,12 @@ module Genesis
         end
       end
 
-      def self.log subsystem, message
-        logline = subsystem.to_s + " :: " + message
-        puts logline
+      def self.log subsystem, message, level = nil
+        logline  = subsystem.to_s + " :: " + message
+
+        # Format the output on basic STDOUT
+        severity = level.nil? ? 'INFO' : level
+        puts severity + " - " + logline
 
         # Load external logging modules and send log to them
         if @@loggers.nil?
@@ -59,7 +62,8 @@ module Genesis
             end
           }.compact
         end
-        @@loggers.each {|logger| logger.log logline}
+
+        @@loggers.each {|logger| logger.log logline, level }
       end
     end
   end

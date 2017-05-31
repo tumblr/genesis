@@ -81,7 +81,7 @@ module Genesis
           end
 
           if status.exitstatus != 0
-            log("Run Command failed for '%s' with exit status '%d' and output: %s" % [cmd.to_s, status.exitstatus, output.to_s])
+            log("Run Command failed for '%s' with exit status '%d' and output: %s" % [cmd.to_s, status.exitstatus, output.to_s], :critical )
             raise 'run_cmd exited with status: ' + status.exitstatus.to_s
           end
 
@@ -95,8 +95,10 @@ module Genesis
           @config ||= Marshal.load(Marshal.dump(Genesis::Framework::Utils.config_cache))
         end
 
-        def log message
-          Genesis::Framework::Utils.log(task_name, message)
+        # @param[String] message
+        # @param[String or Symbol] level
+        def log message, level = nil
+          Genesis::Framework::Utils.log(task_name, message, level)
         end
 
         def prompt message, seconds=15, default=false
