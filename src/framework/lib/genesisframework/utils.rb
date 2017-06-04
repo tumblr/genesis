@@ -47,11 +47,14 @@ module Genesis
       def self.log subsystem, message, level = nil
         logline  = subsystem.to_s + " :: " + message
 
-        # Format the output on basic STDOUT
-        severity = level.nil? ? 'INFO' : level
-        puts severity + " - " + logline
+        # Normalize input as strings or symbols
+        severity = self.log_level_from_string(level)
 
-        # Load external logging modules and send log to them
+        # Format the output for basic STDOUT
+        local_severity = severity.nil? ? 'INFO' : severity.upcase
+        puts local_severity + " - " + logline
+
+        # Load external logging modules
         if @@loggers.nil?
           @@loggers = self.config_cache[:loggers].map {|logger|
             begin
@@ -63,8 +66,23 @@ module Genesis
           }.compact
         end
 
-        @@loggers.each {|logger| logger.log logline, level }
+        # Send log to them
+        @@loggers.each {|logger| logger.log logline, severity }
       end
+
+      # Copied from https://github.com/tumblr/collins/blob/master/support/ruby/collins-client/lib/collins/api/logging.rb#L155
+      # A private method used to validate the log level from user input
+      # Each Genesis_framework logger modules will have to do a mapping from Collins_client SEVERITY to their own.
+      def self.log_level_from_string level
+        return nil if (level.nil? || level.empty?)
+        s = Collins::Api::Logging::Severity
+        if s.valid? level then
+          s.value_of level
+        else
+          raise Collins::ExpectationFailedError.new("#{level} is not a valid log level")
+        end
+      end
+
     end
   end
 end
