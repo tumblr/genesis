@@ -1,11 +1,12 @@
 require 'collins_client'
 require 'facter'
+require 'hashwithindifferentaccess'
 
 module Genesis
   module Framework
     module Utils
 
-      @@config_cache = Hash.new
+      @@config_cache = HashWithIndifferentAccess.new
       @@collins_conn = nil
       @@facter = nil
       @@loggers = nil
