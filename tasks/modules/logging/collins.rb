@@ -9,9 +9,9 @@ module Logging
       Genesis::Framework::Utils.facter
     end
 
-    def self.log message
+    def self.log message, level = nil
       if facter['asset_tag']
-        collins.log! facter['asset_tag'], message
+        collins.log! facter['asset_tag'], message, level
       end
     end
   end
