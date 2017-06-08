@@ -1,0 +1,4 @@
+bootcd/output
+bootcd/rpms/*rpm
+**.rpm
+output/*

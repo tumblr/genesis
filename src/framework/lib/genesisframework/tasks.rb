@@ -52,7 +52,13 @@ module Genesis
       def self.execute task_name
         puts "\n#{task_name}\n================================================="
 
-        return true unless Genesis::PromptCLI.ask("Would you like to run this task?", 10, true) == true
+        prompt_timeout = ENV['GENESIS_PROMPT_TIMEOUT'] \
+          || Genesis::Framework::Utils.config_cache['task_prompt_timeout'] \
+          || 10
+        if prompt_timeout.to_i > 0
+          # only prompt if there is a resonable timeout
+          return true unless Genesis::PromptCLI.ask("Would you like to run this task?", prompt_timeout, true)
+        end
 
         task = Genesis::Framework::Tasks.const_get(task_name)
 
@@ -73,7 +79,7 @@ module Genesis
             end
           end
         rescue => e
-          puts "%s task had error on testing if it needs initialization: %s" % [task_name, e.message]
+          task.log("task had error on testing if it needs initialization: %s" % e.message, :error)
           return false
         end
 
@@ -82,7 +88,7 @@ module Genesis
           self.call_block(task.blocks, :init);
           puts "task is now initialized..."
         rescue => e
-          puts "%s task threw error on initialization: %s" % [task_name, e.message]
+          task.log("task threw error on initialization: %s" % e.message, :error)
           return false
         end
 
@@ -98,7 +104,7 @@ module Genesis
             end
           end
         rescue => e
-          puts "%s task had error on testing if it needs running: %s" % [task_name, e.message]
+          task.log("task had error on testing if it needs running: %s" % e.message, :error)
           return false
         end
 
@@ -106,27 +112,27 @@ module Genesis
         task.options[:retries].each_with_index do |sleep_interval, index|
           attempt = index + 1
           begin
-            puts "task is attempting run #%d..." % [attempt]
+            task.log("task is attempting run #%d..." % [attempt])
             Timeout::timeout(task.options[:timeout]) do
               success = self.call_block(task.blocks, :run)
             end
             # a run block should raise an error or be false for a failure
             success = true if success.nil?
           rescue => e
-             puts "%s task [run #%d] caused error: %s" % [task_name, attempt, e.message]
+             task.log("run #%d caused error: %s" % [attempt, e.message], :error)
              success = nil      # cause a retry
           end
           break unless success.nil? # if we got an answer, we're done
-          puts "task is sleeping for %d seconds..." % [sleep_interval]
+          task.log("task is sleeping for %d seconds..." % [sleep_interval])
           Kernel.sleep(sleep_interval)
         end
         success = false if success.nil? # must have used all the retries, fail
 
         if success
           success = self.call_block(task.blocks, :success)
-          puts "task is successful!"
+          task.log("task is successful!")
         else
-          puts 'task failed!!!'
+          task.log 'task failed!!!', :error
           if self.has_block? task.blocks, :rollback
             success = self.call_block(task.blocks, :rollback, "rolling back!")
           end
@@ -139,4 +145,3 @@ module Genesis
     end
   end
 end
-

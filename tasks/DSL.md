@@ -67,7 +67,16 @@ Example:
 * `install provider, *what`
 
 Uses either the **yum** provider or the **gem** provider to (possibly) install
-software.  Installing a **gem** also does a `require` of it in the Ruby task class.
+software.
+
+When using the **gem** provider genesis will also try to require the gems. If
+the name of your gem does not match what needs to be required, you can specify
+paths to require like this:
+```
+install :gem, 'gem1', 'gem2' => ['gem2/foo', 'gem2/bar']
+```
+This will install `gem1` and `gem2` and require `gem1`, `gem2/foo` and
+`gem2/bar`.
 
 Example:
 [TimedBurnin.rb](https://github.com/tumblr/genesis/blob/master/tasks/TimedBurnin.rb#L13)

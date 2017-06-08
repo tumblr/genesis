@@ -1,5 +1,3 @@
-require 'collins_client'
-require 'syslog'
 require 'retryingfetcher'
 require 'promptcli'
 require 'facter'
@@ -87,7 +85,7 @@ module Genesis
           end
 
           if status.exitstatus != 0
-            log("Run Command failed for '%s' with exit status '%d' and output: %s" % [cmd.to_s, status.exitstatus, output.to_s])
+            log("Run Command failed for '%s' with exit status '%d' and output: %s" % [cmd.to_s, status.exitstatus, output.to_s], :critical )
             raise 'run_cmd exited with status: ' + status.exitstatus.to_s
           end
 
@@ -101,8 +99,10 @@ module Genesis
           @config ||= Marshal.load(Marshal.dump(Genesis::Framework::Utils.config_cache))
         end
 
-        def log message
-          Genesis::Framework::Utils.log(self.class.name, message)
+        # @param[String] message
+        # @param[String or Symbol] level
+        def log message, level = nil
+          Genesis::Framework::Utils.log(task_name, message, level)
         end
 
         def prompt message, seconds=15, default=false
@@ -116,32 +116,51 @@ module Genesis
               raise 'yum install exited with status: ' + $?.exitstatus.to_s
             end
           elsif provider == :gem
+            # convert arguments in "what" to a gem_name => [requires_list] structure
+            gems = {}
+            what.each { |item|
+              if item.is_a?(Hash)
+                gems.merge! item
+              else
+                gems[item] = [item]
+              end
+            }
+
             # We give a decent try at detecting if the gem is
             # installed before trying to reinstall again.
             # If it contains a - (aka you are specifying a specific version
             # or a / (aka you are specifying a path to find it) then
             # we punt on trying to determine if the gem is already
             # installed and just pass it to install anyway.
-            gems = what.select do |item|
-              item.include?("-") \
-                || item.include?("/") \
-                || Gem::Dependency.new(item).matching_specs.count == 0
+            install_gems = gems.select do |gem, requires|
+              gem.include?("-") \
+                || gem.include?("/") \
+                || Gem::Dependency.new(gem).matching_specs.count == 0
             end
-            if gems.size > 0    # make sure we still have something to do
-              Kernel.system('gem', 'install', '--no-ri', '--no-rdoc', *gems)
+
+            if install_gems.size > 0    # make sure we still have something to do
+              options = config.fetch(:gem_args, '').split
+              args = (options << install_gems.keys).flatten
+              Kernel.system('gem', 'install', *args)
               if $?.exitstatus != 0
-                raise "gem install #{gems.join(' ')} exited with status: " \
+                raise "gem install #{args.join(' ')} exited with status: " \
                   + $?.exitstatus.to_s
               end
             else                # be noisy that we aren't doing anything
-              puts "already installed gems: #{what.join(' ')}"
+              puts "already installed gems: #{gems.keys.join(' ')}"
             end
 
             # now need to clear out the Gem cache so we can load it
             Gem.clear_paths
 
-            # Now we require all the gems you asked to be installed
-            what.all? { |gem| require gem }
+            # Attempt to require loaded gems, print a message if we can't.
+            gems.each { |gem, requires|
+              begin
+                requires.each {|r| require r }
+              rescue LoadError
+                raise "Could not load gem #{gem} automatically. Maybe the gem name differs from its load path? Please specify the name to require."
+              end
+            }
           else
             raise 'Unknown install provider: ' + provider.to_s
           end
@@ -153,7 +172,11 @@ module Genesis
         end
 
         def tmp_path filename
-          Genesis::Framework::Utils.tmp_path(filename, self.class.name)
+          Genesis::Framework::Utils.tmp_path(filename, task_name)
+        end
+
+        def task_name
+          self.ancestors.first.to_s.split('::').last
         end
 
         #############################################################

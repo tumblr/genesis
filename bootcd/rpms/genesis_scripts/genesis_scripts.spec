@@ -1,28 +1,28 @@
 Name:           genesis_scripts
-Version:        0.5
-Release:        4%{?dist}
+Version:        0.9
+Release:        1%{?dist}
 License:        Apache License, 2.0
 URL:            http://tumblr.github.io/genesis
 BuildArch:      noarch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
-Source0:        src/root-bash_profile 
+Source0:        src/root-bash_profile
 Source1:        src/init.d-network-prep
-Source2:        src/sysconfig-init.diff 
+Source2:        src/sysconfig-init.diff
 Source3:        src/tty.conf.override
 Source4:        src/genesis-bootloader
 Source5:        src/login-shell
 Summary:        Scripts used by Genesis in the bootcd image
-Group:          System Environment/Base  
+Group:          System Environment/Base
 Requires:       initscripts rootfiles patch
 
 %description
 Scripts and configuration files used by Genesis in the bootcd image
 
 %prep
-# noop  
+# noop
 
 %build
-# noop 
+# noop
 
 %install
 # add root's bash_profile
@@ -30,7 +30,7 @@ mkdir -p $RPM_BUILD_ROOT/root
 install -m 644 -T %{SOURCE0}   $RPM_BUILD_ROOT/root/.bash_profile.genesis_scripts
 
 # add some overrides we need
-mkdir -p $RPM_BUILD_ROOT/etc/sysconfig/network-scripts 
+mkdir -p $RPM_BUILD_ROOT/etc/sysconfig/network-scripts
 mkdir -p $RPM_BUILD_ROOT/etc/init
 mkdir -p $RPM_BUILD_ROOT/etc/init.d
 install -m 755 -T %{SOURCE1}   $RPM_BUILD_ROOT/etc/init.d/network-prep
@@ -45,18 +45,18 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin/
 install -m 555 -T %{SOURCE4}   $RPM_BUILD_ROOT/usr/bin/genesis-bootloader
 
 %clean
-# noop 
+# noop
 
 %files
 %defattr(-, root, root)
 %config /etc/init.d/network-prep
-%config /etc/sysconfig/init.diff 
+%config /etc/sysconfig/init.diff
 %config /etc/init/tty.conf.override
 %config /root/.bash_profile.genesis_scripts
 /usr/bin/genesis-bootloader
 /root/login-shell
 
-%post 
+%post
 cat /root/.bash_profile.genesis_scripts >> /root/.bash_profile
 # TODO undo this hack
 cp  /etc/init/tty.conf.override /etc/init/tty.conf
@@ -92,5 +92,3 @@ chkconfig --add network-prep
 
 * Tue May 06 2014 Jeremy Johnstone <jeremy@tumblr.com> 0.1-2
 - new package built with tito
-
-

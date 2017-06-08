@@ -19,6 +19,10 @@
         :gpgcheck:  0
 :gem_files:
     "genesis_framework": http://<%= @genesis_ipaddress %>:8888/gem/genesis_framework
+:gem_args: &gem_args --no-ri --no-rdoc # Arguments to pass to gem install. Can include --source for internal repos
 :collins:
     :host: <%= @collins_url %>
 :ntp_server: <%= @ntp_server %>
+:loggers:
+  - Collins
+:facter_cache: true # If true, genesis will cache the facts from facter for the whole run. Defaults to true.

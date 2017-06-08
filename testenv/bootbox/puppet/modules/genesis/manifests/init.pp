@@ -4,14 +4,22 @@ class genesis{
 
   # needed so mock can be use to build RPMs
   user {'vagrant': groups => 'mock'}
-  
+
   package {
     ['gcc', 'gcc-c++', 'libxslt-devel', 'libxml2-devel', 'ruby-devel']:
       ensure  => present,
       require => File['/etc/yum.repos.d/ruby193.repo'];
-    ['sinatra', 'sinatra-contrib', 'unicorn']:
+    # sinatra contrib needs tilt
+    'tilt':
+      ensure => '1.3',
       provider => gem,
-      require  => Package['ruby-devel'];
+      require => Package['ruby-devel'];
+    ['sinatra', 'unicorn']:
+      provider => gem,
+      require => Package['ruby-devel'];
+    'sinatra-contrib':
+      provider => gem,
+      require  => Package['tilt'];
   }
 
   service {
