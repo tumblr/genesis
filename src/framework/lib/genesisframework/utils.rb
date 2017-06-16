@@ -1,11 +1,12 @@
 require 'collins_client'
 require 'facter'
+require 'hashwithindifferentaccess'
 
 module Genesis
   module Framework
     module Utils
 
-      @@config_cache = Hash.new
+      @@config_cache = HashWithIndifferentAccess.new
       @@collins_conn = nil
       @@facter = nil
       @@loggers = nil
@@ -28,12 +29,10 @@ module Genesis
 
       def self.collins
         if @@collins_conn.nil?
-          # http://www.rubydoc.info/gems/collins_client/0.2.17/Collins%2FClient:initialize
-          cfg = {
-            :host => self.config_cache['collins']['host'],
-            :username => self.config_cache['collins']['username'],
-            :password => self.config_cache['collins']['password']
-          }
+
+          # Collins_client initialization
+          # http://www.rubydoc.info/gems/collins_client/0.2.17/Collins/Client#initialize-instance_method
+          cfg = self.config_cache[:collins]
           @@collins_conn = ::Collins::Client.new(cfg)
         end
 
