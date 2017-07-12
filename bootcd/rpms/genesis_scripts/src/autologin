@@ -1,0 +1,7 @@
+#! /bin/bash
+
+# this file is used by agetty to log root in on a serial console.
+
+# for some reason $HOME doesn't get set otherwise...
+export HOME=/root
+exec /bin/bash --login

@@ -1,0 +1,7 @@
+# Where should genesis put its files
+
+# wrapper pidfile
+GENESIS_PIDFILE=/var/run/genesis.pid
+
+# wrapper log file
+GENESIS_LOGFILE=/var/log/genesis-bootloader.log

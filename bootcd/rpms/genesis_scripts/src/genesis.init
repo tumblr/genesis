@@ -1,0 +1,25 @@
+#! /bin/bash
+#
+# chkconfig: 2345 09 89
+# description: run genesis bootloader
+#
+
+### BEGIN INIT INFO
+# Required-Start:    $local_fs $network $syslog sshd udev-post
+# Default-Start:     2 3 4 5
+# Description:       run genesis bootloader
+### END INIT INFO
+
+. /etc/rc.d/init.d/functions
+
+case "$1" in
+start)
+	echo -n $"Starting genesis bootloader:  "
+	nohup /usr/bin/run-genesis-bootloader &>/dev/null &
+	success
+	echo
+	;;
+*) ;;
+esac
+
+exit 0

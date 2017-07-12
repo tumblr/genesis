@@ -1,16 +1,19 @@
 Name:           genesis_scripts
-Version:        0.9
+Version:        0.10
 Release:        1%{?dist}
 License:        Apache License, 2.0
 URL:            http://tumblr.github.io/genesis
 BuildArch:      noarch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 Source0:        src/root-bash_profile
-Source1:        src/init.d-network-prep
-Source2:        src/sysconfig-init.diff
-Source3:        src/tty.conf.override
+Source1:        src/network-prep.init
+Source2:        src/agetty-wrapper
+Source3:        src/mingetty-wrapper
 Source4:        src/genesis-bootloader
-Source5:        src/login-shell
+Source5:        src/autologin
+Source6:        src/genesis.init
+Source7:        src/run-genesis-bootloader
+Source8:        src/genesis.sysconfig
 Summary:        Scripts used by Genesis in the bootcd image
 Group:          System Environment/Base
 Requires:       initscripts rootfiles patch
@@ -29,41 +32,61 @@ Scripts and configuration files used by Genesis in the bootcd image
 mkdir -p $RPM_BUILD_ROOT/root
 install -m 644 -T %{SOURCE0}   $RPM_BUILD_ROOT/root/.bash_profile.genesis_scripts
 
-# add some overrides we need
-mkdir -p $RPM_BUILD_ROOT/etc/sysconfig/network-scripts
-mkdir -p $RPM_BUILD_ROOT/etc/init
+# add our init scripts
 mkdir -p $RPM_BUILD_ROOT/etc/init.d
 install -m 755 -T %{SOURCE1}   $RPM_BUILD_ROOT/etc/init.d/network-prep
-install -m 644 -T %{SOURCE2}   $RPM_BUILD_ROOT/etc/sysconfig/init.diff
-install -m 644 -T %{SOURCE3}   $RPM_BUILD_ROOT/etc/init/tty.conf.override
+install -m 755 -T %{SOURCE6}   $RPM_BUILD_ROOT/etc/init.d/genesis
 
-# add helper for agetty
-install -m 555 -T %{SOURCE5}   $RPM_BUILD_ROOT/root/login-shell
+# add our config file
+mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
+install -m 644 -T %{SOURCE8}   $RPM_BUILD_ROOT/etc/sysconfig/genesis
 
-# add the bootloader
+# add our binaries
+mkdir -p $RPM_BUILD_ROOT/sbin/
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
+# add helper for agetty
+install -m 555 -T %{SOURCE5}   $RPM_BUILD_ROOT/usr/bin/autologin
+# add *getty wrappers
+install -m 555 -T %{SOURCE2}   $RPM_BUILD_ROOT/sbin/agetty-wrapper
+install -m 555 -T %{SOURCE3}   $RPM_BUILD_ROOT/sbin/mingetty-wrapper
+# add the bootloader and its wrapper
 install -m 555 -T %{SOURCE4}   $RPM_BUILD_ROOT/usr/bin/genesis-bootloader
+install -m 755 -T %{SOURCE7}   $RPM_BUILD_ROOT/usr/bin/run-genesis-bootloader
 
 %clean
 # noop
 
 %files
 %defattr(-, root, root)
-%config /etc/init.d/network-prep
-%config /etc/sysconfig/init.diff
-%config /etc/init/tty.conf.override
-%config /root/.bash_profile.genesis_scripts
+/etc/init.d/genesis
+/etc/init.d/network-prep
+%config /etc/sysconfig/genesis
+/root/.bash_profile.genesis_scripts
+/sbin/agetty-wrapper
+/sbin/mingetty-wrapper
 /usr/bin/genesis-bootloader
-/root/login-shell
+/usr/bin/run-genesis-bootloader
+/usr/bin/autologin
 
 %post
-cat /root/.bash_profile.genesis_scripts >> /root/.bash_profile
-# TODO undo this hack
-cp  /etc/init/tty.conf.override /etc/init/tty.conf
-/usr/bin/patch /etc/sysconfig/init < /etc/sysconfig/init.diff
+# root should attempt to tail the genesis log file when logged in
+grep -q genesis_scripts /root/.bash_profile || \
+  echo '. /root/.bash_profile.genesis_scripts' >> /root/.bash_profile
+
+# use wrappers to dynamically allow autologin
+sed -e 's|^exec /sbin/mingetty|exec /sbin/mingetty-wrapper|' /etc/init/tty.conf > /etc/init/tty.override
+sed -e 's|^exec /sbin/agetty|exec /sbin/agetty-wrapper|' /etc/init/serial.conf > /etc/init/serial.override
+
 chkconfig --add network-prep
+chkconfig --add genesis
 
 %changelog
+* Tue Jun 21 2017 Nahum Shalman <nshalman@uber.com> 0.10
+- use an init script to launch genesis bootloader
+- with new kernel command line flag GENESIS_AUTOTAIL:
+- all ttys log in and tail the log file until done
+- enable serial console to do autologin too
+
 * Fri Jan 09 2015 Roy Marantz <marantz@tumblr.com> 0.5-1
 - redo networking setup
 

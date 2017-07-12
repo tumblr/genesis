@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+source /etc/sysconfig/genesis
+# If the config file is broken, use sane defaults
+GENESIS_PIDFILE=${GENESIS_PIDFILE:-/var/run/genesis.pid}
+GENESIS_LOGFILE=${GENESIS_LOGFILE:-/var/log/genesis-bootloader.log}
+
+# send stdout and stderr to the log file
+exec &>"${GENESIS_LOGFILE}"
+
+echo $$>"${GENESIS_PIDFILE}"
+
+GENESIS_MODE="$(grep -o -e 'GENESIS_MODE=[^ ]*' /proc/cmdline | cut -c14-)"
+
+# setup the ruby environment we need
+source /etc/profile.d/rvm.sh
+rvm list
+ruby --version
+
+if [[ ! -z $GENESIS_MODE ]]
+then
+    # disable task execution prompting when doing initial target run
+    GENESIS_PROMPT_TIMEOUT=0 genesis-bootloader
+fi
