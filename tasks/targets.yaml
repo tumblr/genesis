@@ -4,6 +4,7 @@ intake:
   - SetupNTP
   - IpmiStart
   - AssetCreation
+  - DisableCpuFreqScaling
   - BiosConfigrC6105
   - BiosConfigrR720
   - FixDellFatPartitions
