@@ -52,10 +52,10 @@ module Genesis
       def self.execute task_name
         puts "\n#{task_name}\n================================================="
 
-        prompt_timeout = ENV['GENESIS_PROMPT_TIMEOUT'] \
+        prompt_timeout = ENV['GENESIS_PROMPT_TIMEOUT'].to_i \
           || Genesis::Framework::Utils.config_cache['task_prompt_timeout'] \
           || 10
-        if prompt_timeout.to_i > 0
+        if prompt_timeout > 0
           # only prompt if there is a resonable timeout
           return true unless Genesis::PromptCLI.ask("Would you like to run this task?", prompt_timeout, true)
         end
