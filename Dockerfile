@@ -1,5 +1,5 @@
 FROM centos:6
-MAINTAINER Gabe Conradi <gabe.conradi@gmail.com>
+MAINTAINER Tumblr Genesis Support <genesis-support@tumblr.com>
 
 ENV OUTPUT_DIR /output
 ENV GENESIS_DIR /genesis
