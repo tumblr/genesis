@@ -1,6 +1,6 @@
 Name:           genesis_scripts
-Version:        0.10
-Release:        1%{?dist}
+Version:        0.11
+Release:        0%{?dist}
 License:        Apache License, 2.0
 URL:            http://tumblr.github.io/genesis
 BuildArch:      noarch
