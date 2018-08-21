@@ -3,7 +3,7 @@
 ## Introduction and motivation
 Genesis is a tool for data center automation. The primary motivation for
 developing Genesis at Tumblr was to streamline the process of discovering new
-machines and reporting their hardware details to 
+machines and reporting their hardware details to
 [Collins](https://github.com/tumblr/collins), our inventory management system,
 without having to do a bunch of data entry by hand. In addition, we've also
 extended Genesis to be a convenient way to do hardware configuration such as
@@ -14,7 +14,7 @@ From a high-level point of view, Genesis consists of a stripped down linux image
 suitable to boot over PXE and a ruby DSL for describing tasks to be executed on
 the host.
 
-This repository also includes a [test environment](https://github.com/tumblr/genesis/tree/master/testenv) 
+This repository also includes a [test environment](https://github.com/tumblr/genesis/tree/master/testenv)
 which is suitable for building the linux image.
 
 ## Framework
@@ -90,7 +90,7 @@ To make it easy to get started with genesis, we have included a `Dockerfile` tha
 # ls output
 ```
 
-If you need to add stuff to the image, i.e. before genesis starts, then create file(s), named `SOMETHING.content` in some directory and bind mount that directory as `/conf` when running genesis-builder.  This is a handy way to setup iptables in your image.  See bootcd/iptable.content.sample for an example.
+It is possible to customize the image with extra content specific to your site, such as adding iptables rules.  To do so, create a directory and put your custom code into one or more files named `<something>.content`.  Bind mount this directory, read-only, as `/conf` when running genesis-builder.  Any file with the *.content* extension under /conf will be added to the build.  See `bootcd/iptable.content.sample` for an example.
 
 ```
 # docker run --privileged=true -v $(pwd)/bootcd:/conf:ro -v $(pwd)/output:/output tumblr/genesis-builder
