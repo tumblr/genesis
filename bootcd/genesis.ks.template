@@ -34,8 +34,8 @@ filesystem
 glibc
 initscripts
 iproute
--iptables-ipv6
--iptables
+iptables-ipv6
+iptables
 iputils
 kernel
 ncurses
@@ -92,9 +92,9 @@ ls /lib/modules | while read kernel; do
   /sbin/dracut -f "/boot/initramfs-${kernel}.img" "$kernel"
 done
 
-# iptables packages are pulled in no matter what %packages says
-echo '>>>> disabling iptables and ip6tables services'
-rm -f /etc/rc*.d/*ip{,6}tables
+### iptables packages are pulled in no matter what %packages says
+###echo '>>>> disabling iptables and ip6tables services'
+###rm -f /etc/rc*.d/*ip{,6}tables
 
 echo '>>>> updating fstab'
 cat > /etc/fstab <<_EOF_
@@ -207,6 +207,10 @@ bash -c "source /etc/profile.d/rvm.sh && gem install genesis_retryingfetcher"
 bash -c "source /etc/profile.d/rvm.sh && gem install genesis_promptcli"
 bash -c "source /etc/profile.d/rvm.sh && gem install genesis_framework"
 bash -c "source /etc/profile.d/rvm.sh && gem list"
+
+# image build time local customizations
+%%ExtraPostContent%%
+# end of image build time local customizations
 
 #echo '>>>> cleanup now unneeds RPMs to make image smaller'
 # yum erase -y readline libyaml  ncurses gdbm make

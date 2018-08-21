@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 source /etc/sysconfig/genesis
 # If the config file is broken, use sane defaults
 GENESIS_PIDFILE=${GENESIS_PIDFILE:-/var/run/genesis.pid}

@@ -59,6 +59,27 @@ ns=`grep nameserver /etc/resolv.conf`
 nameserver 8.8.4.4'
 perl -pe "s/%%LocalNameservers%%/$ns/" genesis.ks.template > "$tmpdir/genesis.ks"
 
+# Insert extra content into the %POST section of the ks file
+# used to build the genesis image.
+# All files of the form:  /conf/*.content
+# which should be bind mounted via: docker run -v /Some/Dir:/conf:ro ....
+# are inserted in the genesis.ks file replacing the %%ExtraPostContent%%
+# line in that file.
+extras=( $(find /conf -name \*.content 2>/dev/null) )
+if [[ ${#extras[@]} -gt 0 ]]; then
+   echo '### inserting Extra Post Content'
+   sed -i -e "
+/%%ExtraPostContent%%/{
+  s/%%ExtraPostContent%%//
+  $(for f in "${extras[@]}"; do echo r "$f"; done)
+}
+"  "$tmpdir/genesis.ks"
+else
+   echo '### not inserting Extra Post Content, none found'
+   sed -i -e 's/%%ExtraPostContent%%/# intentionally blank/' \
+       "$tmpdir/genesis.ks"
+fi
+
 echo '### creating livecd'
 livecd-creator -c "$tmpdir/genesis.ks" -f genesis -t "$tmpdir/live/" --cache="$tmpdir/livecache/" -v
 if [[ $? != 0 ]] ; then

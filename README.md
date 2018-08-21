@@ -90,6 +90,13 @@ To make it easy to get started with genesis, we have included a `Dockerfile` tha
 # ls output
 ```
 
+If you need to add stuff to the image, i.e. before genesis starts, then create file(s), named `SOMETHING.content` in some directory and bind mount that directory as `/conf` when running genesis-builder.  This is a handy way to setup iptables in your image.  See bootcd/iptable.content.sample for an example.
+
+```
+# docker run --privileged=true -v $(pwd)/bootcd:/conf:ro -v $(pwd)/output:/output tumblr/genesis-builder
+# ls output
+```
+
 To build a custom image, if you have tweaked something about genesis, you can present build a custom builder image:
 
 ```
