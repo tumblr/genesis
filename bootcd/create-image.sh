@@ -65,7 +65,7 @@ perl -pe "s/%%LocalNameservers%%/$ns/" genesis.ks.template > "$tmpdir/genesis.ks
 # which should be bind mounted via: docker run -v /Some/Dir:/conf:ro ....
 # are inserted in the genesis.ks file replacing the %%ExtraPostContent%%
 # line in that file.
-extras=( $(find /conf -name \*.content 2>/dev/null) )
+extras=( $(find /conf -name \*.content 2>/dev/null || true) )
 if [[ ${#extras[@]} -gt 0 ]]; then
    echo '### inserting Extra Post Content'
    sed -i -e "
